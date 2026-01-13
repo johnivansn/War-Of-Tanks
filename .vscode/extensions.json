@@ -1,0 +1,27 @@
+{
+  "recommendations": [
+    "redhat.java",
+    "vscjava.vscode-java-debug",
+    "vscjava.vscode-java-dependency",
+    "vscjava.vscode-java-test",
+    "vscjava.vscode-maven",
+    "vscjava.vscode-gradle",
+    "usernamehw.errorlens",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    "eamodio.gitlens",
+    "mhutchie.git-graph",
+    "donjayamanne.githistory",
+    "codezombiech.gitignore",
+    "pkief.material-icon-theme",
+    "kisstkondoros.vscode-gutter-preview",
+    "spywhere.guides",
+    "adpyke.codesnap",
+    "zainchen.json",
+    "dotjoshjohnson.xml",
+    "marcelovelasquez.rainbow-csv",
+    "aykutsarac.jsoncrack-vscode",
+    "jmkrivocapich.drawfolderstructure",
+    "yzhang.markdown-all-in-one"
+  ]
+}
