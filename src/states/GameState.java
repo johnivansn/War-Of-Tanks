@@ -560,26 +560,20 @@ public class GameState extends State {
 		}
 		if (pau > 0) {
 
-			for (int i = 0; i < movingObjects.size(); i++) {
+			for (int i = movingObjects.size() - 1; i >= 0; i--) {
 				MovingObject mo = movingObjects.get(i);
 				mo.update(dt);
-				if (mo.isDead()) {
+				if (mo.isDead())
 					movingObjects.remove(i);
-					i--;
-				}
-
 			}
 
 			detectCollisions();
 
 			//
-			for (int i = 0; i < explosions.size(); i++) {
+			for (int i = explosions.size() - 1; i >= 0; i--) {
 				Animation anim = explosions.get(i);
 				anim.update(dt);
-				if (!anim.isRunning()) {
-					explosions.remove(i);
-				}
-
+				if (!anim.isRunning()) explosions.remove(i);
 			}
 			//
 			if (gameOverTimer > Constants.GAME_OVER_TIME) {
@@ -668,7 +662,7 @@ public class GameState extends State {
 
 		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-		for (int i = 0; i < messages.size(); i++) {
+		for (int i = messages.size() - 1; i >= 0; i--) {
 			messages.get(i).draw(g2d);
 			if (messages.get(i).isDead())
 				messages.remove(i);
@@ -688,7 +682,7 @@ public class GameState extends State {
 		drawName(g);
 		drawScore(g);
 		drawLives(g);
-		
+
 		// zona de spawn de enemy
 		boolean mostrar = false;
 

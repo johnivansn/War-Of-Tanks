@@ -28,24 +28,24 @@ public class EditState2 extends State {
 	private int posX, posY;
 	private int n, cont;
 	private double heightEdit = Constants.HEIGHT - Constants.HEIGHT / 1.375;
-	
+
 	public EditState2() {
 		loopbackEdit();
 		buttons = new ArrayList<>();
 		buttonsN = new ArrayList<>();
 		load();
 		dump = new Obj(
-				Assets.dump, 
+				Assets.dump,
 				Color.WHITE,
 				new Vector2D(50, (int) (heightEdit - 50)),
-				true, 
+				true,
 				false);
-		
+
 		buttonsN.add(new Button(
-				Assets.Item1, 
+				Assets.Item1,
 				Assets.Item1,
 				935,230,
-				"", 
+				"",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -55,12 +55,12 @@ public class EditState2 extends State {
 						}
 					}
 				}));
-		
+
 		buttonsN.add(new Button(
-				Assets.Item2, 
+				Assets.Item2,
 				Assets.Item2,
 				935,363,
-				"", 
+				"",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -70,12 +70,12 @@ public class EditState2 extends State {
 						}
 					}
 				}));
-		
+
 		buttonsN.add(new Button(
-				Assets.piedra, 
+				Assets.piedra,
 				Assets.piedra,
 				950,540,
-				"", 
+				"",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -85,12 +85,12 @@ public class EditState2 extends State {
 						}
 					}
 				}));
-		
+
 		buttons.add(new Button(
-				Assets.grey_button, 
+				Assets.grey_button,
 				Assets.blue_button,
 				100,50,
-				"MENU", 
+				"MENU",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -102,12 +102,12 @@ public class EditState2 extends State {
 						}
 					}
 				}));
-		
+
 		buttons.add(new Button(
-				Assets.grey_button, 
+				Assets.grey_button,
 				Assets.blue_button,
 				900 / 2 - Assets.blue_button.getWidth() / 2, 50,
-				"REINICIAR", 
+				"REINICIAR",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -117,12 +117,12 @@ public class EditState2 extends State {
 						}
 					}
 				}));
-		
+
 		buttons.add(new Button(
-				Assets.grey_button, 
+				Assets.grey_button,
 				Assets.blue_button,
 				800 - Assets.blue_button.getWidth(), 50,
-				"GUARDAR", 
+				"GUARDAR",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -137,38 +137,38 @@ public class EditState2 extends State {
 					}
 				}));
 	}
-	
+
 	@Override
 	public void update(float dt) {
 		cont += dt;
 		if (cont > 2000) {
 			n = cont = 0;
 		}
-		
+
 		dump.update();
 		dump.vis = true;
-		for (int i = 0; i < objs.size(); i++) {
+		for (int i = objs.size() - 1; i >= 0; i--) {
 			if (objs.get(i).mouseIn && dump.mouseIn) {
 				objs.remove(i);
 			}
 		}
 		//
-		
-		
+
+
 		for (Button b : buttonsN) {
 			b.update();
 		}
-		
+
 		for (Button b : buttons) {
 			b.update();
 		}
-		
+
 		for (Obj a : objs) {
 			a.update();
 			a.limit = true;
-			
+
 		}
-		
+
 		for (int i = 0; i < objs.size(); i++) {
 			if (objs.get(i).mouseIn) {
 				int num = i;
@@ -187,27 +187,27 @@ public class EditState2 extends State {
 	@Override
 	public void draw(Graphics g) {
 		g.drawImage(Assets.editMenu, 0, 0, null);
-		
+
 		dump.draw(g);
-		
+
 		for (Button b : buttonsN) {
 			b.resize = b.mouseIn;
 			b.draw(g);
 		}
-		
+
 		for (Button b : buttons) {
 			b.draw(g);
 		}
-		
+
 		for (Obj a : objs) {
 			a.draw(g);
 		}
 	}
-	
+
 	public  ArrayList<Obj> getObjs() {
 		return objs ;
 	}
-	
+
 	public  void save() {
 		link = Links.newLink();
 		for (int i = 0; i < objs.size(); i++) {
@@ -248,12 +248,12 @@ public class EditState2 extends State {
 					texture = Assets.piedra;
 				}
 				objs.add(new Obj(
-						texture, 
-						Color.CYAN, 
+						texture,
+						Color.CYAN,
 						new Vector2D(
 								dataList.get(i).getPositionX() / 1.375,
 								dataList.get(i).getPositionY() / 1.375 + (heightEdit - 50)),
-						true, 
+						true,
 						false));
 			}
 		} catch (FileNotFoundException e) {
