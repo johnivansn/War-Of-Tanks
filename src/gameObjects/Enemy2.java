@@ -83,9 +83,6 @@ public class Enemy2 extends MovingObject {
 
 			angleD = pathFollowing.getAngle();
 
-			if (pathFollowing.getX() < 0)
-				angleD = -angleD + Math.PI;
-
 			angleD += Math.PI / 2;
 
 			if (index == 1) {
@@ -249,14 +246,9 @@ public class Enemy2 extends MovingObject {
 	private void datos() {
 		toPlayer = gameState.getPlayer().getCenter().subtract(getCenter()).normalize();
 		currentAngleD = toPlayer.getAngle();
-		//
 		currentAngleD += Math.random() * Constants.ENEMY_ANGLE_RANGE - Constants.ENEMY_ANGLE_RANGE / 2;// altera la punteria
-		//
-		if (toPlayer.getX() < 0)
-			currentAngleD = -currentAngleD + Math.PI;
 
 		toPlayer = toPlayer.setDirection(currentAngleD);
-		//
 		d = currentAngleD += Math.PI / 2;
 	}
 }

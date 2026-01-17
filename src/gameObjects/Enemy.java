@@ -80,9 +80,6 @@ public class Enemy extends MovingObject {
 
 			angleD = pathFollowing.getAngle();
 
-			if (pathFollowing.getX() < 0)
-				angleD = -angleD + Math.PI;
-
 			angleD += Math.PI / 2;
 
 			if (index == 1) {
@@ -212,7 +209,7 @@ public class Enemy extends MovingObject {
 
 		/*
 		 * g.setColor(Color.RED);
-		 * 
+		 *
 		 * for (int i = 1; i < path.size(); i++) {// prueba
 		 * g.drawOval((int) path.get(i).getX(), (int) path.get(i).getY(), 10, 10);
 		 * }
@@ -225,10 +222,6 @@ public class Enemy extends MovingObject {
 		toPlayer = gameState.getPlayer().getCenter().subtract(getCenter()).normalize();
 		currentAngleD = toPlayer.getAngle();
 		currentAngleD += Math.random() * Constants.ENEMY_ANGLE_RANGE - Constants.ENEMY_ANGLE_RANGE / 2;
-
-		if (toPlayer.getX() < 0) {
-			currentAngleD = -currentAngleD + Math.PI;
-		}
 
 		toPlayer = toPlayer.setDirection(currentAngleD);
 		d = currentAngleD + Math.PI / 2;

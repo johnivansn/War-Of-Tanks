@@ -124,10 +124,10 @@ public class GameState extends State {
 			angleMissile = headingRandom.getAngle() + Math.PI / 2;
 		} else if (a == 2) {// der abajo a izq arriba
 			headingRandom = new Vector2D(0, 1).setDirection(Math.random() + Math.PI);
-			angleMissile = -headingRandom.getAngle() + (3 * Math.PI) / 2;
+			angleMissile = headingRandom.getAngle() + Math.PI / 2;
 		} else if (a == 3) {// der arriba a izq abajo
 			headingRandom = new Vector2D(0, 1).setDirection(Math.random() + Math.PI / 2);
-			angleMissile = -headingRandom.getAngle() + (3 * Math.PI) / 2;
+			angleMissile = headingRandom.getAngle() + Math.PI / 2;
 		} else {// izq abajo a der arriba
 			headingRandom = new Vector2D(0, 1).setDirection(Math.random() - Math.PI / 2);
 			angleMissile = headingRandom.getAngle() + Math.PI / 2;
@@ -674,13 +674,13 @@ public class GameState extends State {
 		 * g.setColor(Color.CYAN);
 		 * g2d.drawLine(50, 0, 50, 650);
 		 * g2d.drawLine(150, 0, 150, 650);
-		 * 
+		 *
 		 * g2d.drawLine(1050, 0, 1050, 650);
 		 * g2d.drawLine(950, 0, 950, 650);
-		 * 
+		 *
 		 * g2d.drawLine(0, 50, 1100, 50);
 		 * g2d.drawLine(0, 150, 1100, 150);
-		 * 
+		 *
 		 * g2d.drawLine(0, 500, 1100, 500);
 		 * g2d.drawLine(0, 600, 1100, 600);
 		 */

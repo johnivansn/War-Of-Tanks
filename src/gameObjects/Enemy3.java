@@ -92,9 +92,6 @@ public class Enemy3 extends MovingObject {
 
 			angleD = pathFollowing.getAngle();
 
-			if (pathFollowing.getX() < 0)
-				angleD = -angleD + Math.PI;
-
 			angleD += Math.PI / 2;
 
 			if (index == 1) {
@@ -158,7 +155,7 @@ public class Enemy3 extends MovingObject {
 				null);
 		/*
 		 * g.setColor(Color.RED);
-		 * 
+		 *
 		 * for (int i = 1; i < path.size(); i++) {// prueba
 		 * g.drawOval((int) path.get(i).getX(), (int) path.get(i).getY(), 10, 10);
 		 * }
