@@ -66,212 +66,215 @@ public class Player extends MovingObject {
 	}
 
 	@Override
-	public void update(float dt) { // movimiento
+	public void update(float dt) {
+		updatePowerUpTimers(dt);
+		updateSpawningState(dt);
+		handleShooting(dt);
+		handleMovement(dt);
+		clampToScreen();
+		updateVisualEffects(dt);
+	}
 
+	private void updatePowerUpTimers(float dt) {
 		fireRate += dt;
-		/*
-		 * if (!activa) {
-		 * if (multiOn) {
-		 * multi += dt;
-		 * }
-		 * }
-		 */
+
 		if (activa && multiOn) {
 			multi += dt;
 		}
 
 		if (shieldOn) {
 			shieldTime += dt;
+			if (shieldTime > Constants.SHIELD_TIME) {
+				shieldTime = 0;
+				shieldOn = false;
+			}
 		}
 
-		if (doubleScoreOn)
+		if (doubleScoreOn) {
 			doubleScoreTime += dt;
+			if (doubleScoreTime > Constants.DOUBLE_SCORE_TIME) {
+				doubleScoreOn = false;
+				doubleScoreTime = 0;
+			}
+		}
 
 		if (fastFireOn) {
 			fireSpeed = Constants.FIRE_RATE / 2;
 			fastFireTime += dt;
+			if (fastFireTime > Constants.FAST_FIRE_TIME) {
+				fastFireOn = false;
+				fastFireTime = 0;
+			}
 		} else {
 			fireSpeed = Constants.FIRE_RATE;
 		}
 
-		if (doubleGunOn)
+		if (doubleGunOn) {
 			doubleGunTime += dt;
-
-		if (shieldTime > Constants.SHIELD_TIME) {
-			shieldTime = 0;
-			shieldOn = false;
+			if (doubleGunTime > Constants.DOUBLE_GUN_TIME) {
+				doubleGunOn = false;
+				doubleGunTime = 0;
+			}
 		}
 
-		if (doubleScoreTime > Constants.DOUBLE_SCORE_TIME) {
-			doubleScoreOn = false;
-			doubleScoreTime = 0;
-		}
-
-		if (fastFireTime > Constants.FAST_FIRE_TIME) {
-			fastFireOn = false;
-			fastFireTime = 0;
-		}
-
-		if (doubleGunTime > Constants.DOUBLE_GUN_TIME) {
-			doubleGunOn = false;
-			doubleGunTime = 0;
-		}
 		if (multi > Constants.MULTI_FIRE_DURATION) {
 			multiOn = false;
 			multi = 0;
 		}
-		if (spawning) {
-			flickerTime += dt;
-			spawnTime += dt;
+	}
 
-			if (flickerTime > Constants.FLICKER_TIME) {
-				visible = !visible;
-				flickerTime = 0;
-			}
+	private void updateSpawningState(float dt) {
+		if (!spawning)
+			return;
 
-			if (spawnTime > Constants.SPAWNING_TIME) {
-				spawning = false;
-				visible = true;
-			}
+		flickerTime += dt;
+		spawnTime += dt;
 
+		if (flickerTime > Constants.FLICKER_TIME) {
+			visible = !visible;
+			flickerTime = 0;
 		}
 
-		if (KeyBoard.SHOOT && fireRate > fireSpeed && !spawning) { // velocidad de disparo
-
-			if (doubleGunOn) {
-				Vector2D leftGun = getCenter();
-				Vector2D rightGun = getCenter();
-
-				Vector2D temp = new Vector2D(heading);
-				temp.normalize();
-				temp = temp.setDirection(angle - 1.35f);// 1.3
-				temp = temp.scale(width);
-				rightGun = rightGun.add(temp);
-
-				temp = temp.setDirection(angle - 1.8f);// 1.9
-				leftGun = leftGun.add(temp);
-
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								leftGun,
-								heading,
-								angle,
-								Assets.fire));
-
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								rightGun,
-								heading,
-								angle,
-								Assets.fire));
-
-			} else if (multiOn) {
-
-				// delanteIzq
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								getCenter(),
-								heading.setDirection(angle - Math.PI / 2 + Math.PI / 16),
-								angle + Math.PI / 16,
-								Assets.fire));
-				// delanteM
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								getCenter(),
-								heading,
-								angle,
-								Assets.fire));
-				// delanteDer
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								getCenter(),
-								heading.setDirection(angle - Math.PI / 2 - Math.PI / 16 + Math.PI),
-								angle - Math.PI / 16 + Math.PI,
-								Assets.fire));
-				// -------------------------------------------------
-				// atrasIzq
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								getCenter(),
-								heading.setDirection(angle - Math.PI / 2 + Math.PI / 16 + Math.PI),
-								angle + Math.PI / 16 + Math.PI,
-								Assets.fire));
-				// atrasM
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								getCenter(),
-								heading.setDirection(angle - Math.PI / 2 - Math.PI),
-								angle + Math.PI,
-								Assets.fire));
-				// atrasDer
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								getCenter(),
-								heading.setDirection(angle - Math.PI / 2 - Math.PI / 16),
-								angle - Math.PI / 16,
-								Assets.fire));
-				// -------------------------------------------------
-				// arribaIzq
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								getCenter(),
-								heading.setDirection(angle - Math.PI / 2 + Math.PI / 16 - Math.PI / 2),
-								angle + Math.PI / 16 - Math.PI / 2,
-								Assets.fire));
-				// arribaM
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								getCenter(),
-								heading.setDirection(angle - Math.PI / 2 - Math.PI / 2),
-								angle - Math.PI / 2,
-								Assets.fire));
-				// arribaDer
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								getCenter(),
-								heading.setDirection(angle - Math.PI / 2 - Math.PI / 16 - Math.PI / 2),
-								angle - Math.PI / 16 - Math.PI / 2,
-								Assets.fire));
-				// -------------------------------------------------
-				// abajoIzq
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								getCenter(),
-								heading.setDirection(angle - Math.PI / 2 + Math.PI / 16 + Math.PI / 2),
-								angle + Math.PI / 16 + Math.PI / 2,
-								Assets.fire));
-				// abajoM
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								getCenter(),
-								heading.setDirection(angle - Math.PI / 2 + Math.PI / 2),
-								angle + Math.PI / 2,
-								Assets.fire));
-				// abajoDer
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								getCenter(),
-								heading.setDirection(angle - Math.PI / 2 - Math.PI / 16 + Math.PI / 2),
-								angle - Math.PI / 16 + Math.PI / 2,
-								Assets.fire));
-			} else {
-				gameState.getMovingObjects().add(0,
-						gameState.acquireFire(
-								getCenter().add(heading.scale(width)),
-								heading,
-								angle,
-								Assets.fire));
-			}
-
-			fireRate = 0;
-			shoot.play();
-
+		if (spawnTime > Constants.SPAWNING_TIME) {
+			spawning = false;
+			visible = true;
 		}
+	}
+
+	private void handleShooting(float dt) {
+		if (!KeyBoard.SHOOT || fireRate <= fireSpeed || spawning)
+			return;
+
+		if (doubleGunOn) {
+			shootDoubleGun();
+		} else if (multiOn) {
+			shootMulti();
+		} else {
+			shootSingle();
+		}
+
+		fireRate = 0;
+		shoot.play();
 
 		if (shoot.getFramePosition() > Constants.SOUND_STOP_THRESHOLD) {
 			shoot.stop();
 		}
+	}
 
+	private void shootDoubleGun() {
+		Vector2D leftGun = getCenter();
+		Vector2D rightGun = getCenter();
+
+		Vector2D temp = new Vector2D(heading);
+		temp.normalize();
+		temp = temp.setDirection(angle - 1.35f);// 1.3
+		temp = temp.scale(width);
+		rightGun = rightGun.add(temp);
+
+		temp = temp.setDirection(angle - 1.8f);// 1.9
+		leftGun = leftGun.add(temp);
+
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				leftGun,
+				heading,
+				angle,
+				Assets.fire));
+
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				rightGun,
+				heading,
+				angle,
+				Assets.fire));
+	}
+
+	private void shootMulti() {
+		Vector2D center = getCenter();
+		// delanteIzq
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				center,
+				heading.setDirection(angle - Math.PI / 2 + Math.PI / 16),
+				angle + Math.PI / 16,
+				Assets.fire));
+		// delanteM
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				center,
+				heading,
+				angle,
+				Assets.fire));
+		// delanteDer
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				center,
+				heading.setDirection(angle - Math.PI / 2 - Math.PI / 16 + Math.PI),
+				angle - Math.PI / 16 + Math.PI,
+				Assets.fire));
+		// -------------------------------------------------
+		// atrasIzq
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				center,
+				heading.setDirection(angle - Math.PI / 2 + Math.PI / 16 + Math.PI),
+				angle + Math.PI / 16 + Math.PI,
+				Assets.fire));
+		// atrasM
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				center,
+				heading.setDirection(angle - Math.PI / 2 - Math.PI),
+				angle + Math.PI,
+				Assets.fire));
+		// atrasDer
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				center,
+				heading.setDirection(angle - Math.PI / 2 - Math.PI / 16),
+				angle - Math.PI / 16,
+				Assets.fire));
+		// -------------------------------------------------
+		// arribaIzq
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				center,
+				heading.setDirection(angle - Math.PI / 2 + Math.PI / 16 - Math.PI / 2),
+				angle + Math.PI / 16 - Math.PI / 2,
+				Assets.fire));
+		// arribaM
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				center,
+				heading.setDirection(angle - Math.PI / 2 - Math.PI / 2),
+				angle - Math.PI / 2,
+				Assets.fire));
+		// arribaDer
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				center,
+				heading.setDirection(angle - Math.PI / 2 - Math.PI / 16 - Math.PI / 2),
+				angle - Math.PI / 16 - Math.PI / 2,
+				Assets.fire));
+		// -------------------------------------------------
+		// abajoIzq
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				center,
+				heading.setDirection(angle - Math.PI / 2 + Math.PI / 16 + Math.PI / 2),
+				angle + Math.PI / 16 + Math.PI / 2,
+				Assets.fire));
+		// abajoM
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				center,
+				heading.setDirection(angle - Math.PI / 2 + Math.PI / 2),
+				angle + Math.PI / 2,
+				Assets.fire));
+		// abajoDer
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				center,
+				heading.setDirection(angle - Math.PI / 2 - Math.PI / 16 + Math.PI / 2),
+				angle - Math.PI / 16 + Math.PI / 2,
+				Assets.fire));
+	}
+
+	private void shootSingle() {
+		gameState.getMovingObjects().add(0, gameState.acquireFire(
+				getCenter().add(heading.scale(width)),
+				heading,
+				angle,
+				Assets.fire));
+	}
+
+	private void handleMovement(float dt) {
 		// teclado
 		if (KeyBoard.RIGHT)
 			angle += Constants.DELTA_ANGLE;
@@ -289,7 +292,9 @@ public class Player extends MovingObject {
 		velocity = velocity.limit(maxVel);
 		heading = heading.setDirection(angle - Math.PI / 2);
 		position = position.add(velocity);
+	}
 
+	private void clampToScreen() {
 		// limitador de pantalla para el jugador
 		if (position.getX() < 0) {
 			position.setX(0);
@@ -303,7 +308,9 @@ public class Player extends MovingObject {
 		if (position.getY() > Constants.HEIGHT - height) {
 			position.setY(Constants.HEIGHT - height);
 		}
-		//
+	}
+
+	private void updateVisualEffects(float dt) {
 		if (shieldOn)
 			shieldEffect.update(dt);
 	}
