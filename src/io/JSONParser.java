@@ -6,7 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -18,13 +20,13 @@ import input.Constants;
 public class JSONParser {
 
 	public static ArrayList<ScoreData> readFile() throws FileNotFoundException {
-
 		ArrayList<ScoreData> dataList = new ArrayList<ScoreData>();
 		File file = new File(Constants.SCORE_PATH);
 
 		if (!file.exists() || file.length() == 0) {
 			return dataList;
 		}
+
 		JSONTokener parser = new JSONTokener(new FileInputStream(file));
 		JSONArray jsonList = new JSONArray(parser);
 
@@ -41,25 +43,71 @@ public class JSONParser {
 	}
 
 	public static void writeFile(ArrayList<ScoreData> dataList) throws IOException {
-		File outputFile = new File(Constants.SCORE_PATH);
+		Path outputPath = Paths.get(Constants.SCORE_PATH);
+		File outputFile = outputPath.toFile();
 
-		outputFile.getParentFile().mkdir();
-		outputFile.createNewFile();
+		File parentDir = outputFile.getParentFile();
+		if (parentDir != null && !parentDir.exists()) {
+			if (!parentDir.mkdirs()) {
+				throw new IOException("No se pudo crear el directorio: " + parentDir.getAbsolutePath());
+			}
+		}
+
+		if (outputFile.exists() && outputFile.length() > 0) {
+			Path backupPath = Paths.get(Constants.SCORE_PATH + ".backup");
+			try {
+				Files.copy(outputPath, backupPath, StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {
+				System.err.println("ADVERTENCIA: No se pudo crear backup: " + e.getMessage());
+				// Continuar de todas formas, pero advertir
+			}
+		}
 
 		JSONArray jsonList = new JSONArray();
-
 		for (ScoreData data : dataList) {
-
 			JSONObject obj = new JSONObject();
 			obj.put("score", data.getScore());
 			obj.put("date", data.getDate());
 			obj.put("Nickname", data.getNickname());
-
 			jsonList.put(obj);
 		}
-		BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile.toURI()));
-		jsonList.write(writer);
-		writer.close();
+
+		Path tempPath = Paths.get(Constants.SCORE_PATH + ".tmp");
+		try (BufferedWriter writer = Files.newBufferedWriter(tempPath)) {
+			jsonList.write(writer);
+			writer.flush();
+		} catch (IOException e) {
+			try {
+				Files.deleteIfExists(tempPath);
+			} catch (IOException deleteError) {
+				// Ignorar error al eliminar temporal
+			}
+			throw new IOException("Error al escribir archivo temporal: " + e.getMessage(), e);
+		}
+
+		try {
+			Files.move(tempPath, outputPath,
+					StandardCopyOption.REPLACE_EXISTING,
+					StandardCopyOption.ATOMIC_MOVE);
+		} catch (IOException e) {
+			try {
+				Files.deleteIfExists(tempPath);
+			} catch (IOException deleteError) {
+				// Ignorar error al eliminar temporal
+			}
+			throw new IOException("Error al reemplazar archivo: " + e.getMessage(), e);
+		}
 	}
 
+	public static boolean restoreFromBackup() throws IOException {
+		Path backupPath = Paths.get(Constants.SCORE_PATH + ".backup");
+		Path outputPath = Paths.get(Constants.SCORE_PATH);
+
+		if (!Files.exists(backupPath)) {
+			return false;
+		}
+
+		Files.copy(backupPath, outputPath, StandardCopyOption.REPLACE_EXISTING);
+		return true;
+	}
 }
