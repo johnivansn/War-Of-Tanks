@@ -2,14 +2,13 @@ package gameObjects;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 import math.Vector2D;
 import graphics.Assets;
 import graphics.Sound;
 import states.GameState;
 
-public abstract class MovingObject extends GameObject{
+public abstract class MovingObject extends GameObject {
 
 	protected Vector2D velocity;
 	protected AffineTransform at;
@@ -24,12 +23,11 @@ public abstract class MovingObject extends GameObject{
 	protected boolean Dead;
 
 	public MovingObject(
-			Vector2D position, 
-			Vector2D velocity, 
-			double maxVel, 
+			Vector2D position,
+			Vector2D velocity,
+			double maxVel,
 			BufferedImage texture,
-			GameState gameState) 
-	{
+			GameState gameState) {
 		super(position, texture);
 		this.velocity = velocity;
 		this.maxVel = maxVel;
@@ -41,185 +39,118 @@ public abstract class MovingObject extends GameObject{
 		Dead = false;
 	}
 
-	protected void collidesWith() {
-		
-		ArrayList<MovingObject> movingObjects = gameState.getMovingObjects();
-
-		for (MovingObject m : movingObjects) {
-			//MovingObject m = movingObjects.get(i);
-
-			if (m.equals(this))
-				continue;
-
-			double distance = m.getCenter().subtract(getCenter()).getMagnitude();
-
-			if (distance < m.width / 2 + width / 2 
-				//&& movingObjects.contains(this) 
-				&& !m.Dead 
-				&& !Dead) 
-			{
-				objectCollision(m, this);
-			}
-		}
-	}
-
-	private void objectCollision(MovingObject a, MovingObject b) {
+	public void handleCollision(MovingObject other) {
 
 		Player p = null;
 
-		if (a instanceof Player)
-			p = (Player) a;
-		else if (b instanceof Player)
-			p = (Player) b;
+		if (this instanceof Player)
+			p = (Player) this;
+		else if (other instanceof Player)
+			p = (Player) other;
 
 		if (p != null && p.isSpawning())
 			return;
-		
-		if ( // todo objeto collisiona excepto a - b y b - a:
-				(a instanceof FireE && b instanceof FireE)
 
-				|| (a instanceof Enemy && b instanceof Missile) 
-				|| (a instanceof Missile && b instanceof Enemy)
+		if ((this instanceof FireE && other instanceof FireE)
 
-				|| (a instanceof Enemy2 && b instanceof Missile) 
-				|| (a instanceof Missile && b instanceof Enemy2)
+				|| (this instanceof Enemy && other instanceof Missile)
+				|| (this instanceof Missile && other instanceof Enemy)
+				|| (this instanceof Enemy2 && other instanceof Missile)
+				|| (this instanceof Missile && other instanceof Enemy2)
 
-				|| (a instanceof Enemy3 && b instanceof Missile) 
-				|| (a instanceof Missile && b instanceof Enemy3)
+				|| (this instanceof Enemy3 && other instanceof Missile)
+				|| (this instanceof Missile && other instanceof Enemy3)
 
-				|| (a instanceof Enemy && b instanceof FireE) 
-				|| (a instanceof FireE && b instanceof Enemy)
-				
-				|| (a instanceof Enemy2 && b instanceof FireE) 
-				|| (a instanceof FireE && b instanceof Enemy2)
-				
-				|| (a instanceof Enemy3 && b instanceof FireE) 
-				|| (a instanceof FireE && b instanceof Enemy3)
-				
-				|| (a instanceof Fire && b instanceof Player) 
-				|| (a instanceof Player && b instanceof Fire)
+				|| (this instanceof Enemy && other instanceof FireE)
+				|| (this instanceof FireE && other instanceof Enemy)
 
-				|| (a instanceof Fire && b instanceof Fire)
-				
-				|| (a instanceof Player && b instanceof FireE)	// x
-				|| (a instanceof FireE && b instanceof Player)	// x
+				|| (this instanceof Enemy2 && other instanceof FireE)
+				|| (this instanceof FireE && other instanceof Enemy2)
 
-				|| (a instanceof Player && b instanceof Missile)	// x
-				|| (a instanceof Missile && b instanceof Player)	// x
-				
-				/*|| (a instanceof Enemy3 && b instanceof Rocks) 
-				|| (a instanceof Rocks && b instanceof Enemy3)
-				|| (a instanceof Enemy2 && b instanceof Rocks) 
-				|| (a instanceof Rocks && b instanceof Enemy2)
-				|| (a instanceof Enemy && b instanceof Rocks) 
-				|| (a instanceof Rocks && b instanceof Enemy)
-				|| (a instanceof FireE && b instanceof Rocks) 
-				|| (a instanceof Rocks && b instanceof FireE)
-				|| (a instanceof Fire && b instanceof Rocks) 
-				|| (a instanceof Rocks && b instanceof Fire)
-				|| (a instanceof Player && b instanceof Rocks) 
-				|| (a instanceof Rocks && b instanceof Player)
-				|| (a instanceof Missile && b instanceof Rocks) 
-				|| (a instanceof Rocks && b instanceof Missile)*/
-				
+				|| (this instanceof Enemy3 && other instanceof FireE)
+				|| (this instanceof FireE && other instanceof Enemy3)
+
+				|| (this instanceof Fire && other instanceof Player)
+				|| (this instanceof Player && other instanceof Fire)
+
+				|| (this instanceof Fire && other instanceof Fire)
+
+				|| (this instanceof Player && other instanceof FireE) // x
+				|| (this instanceof FireE && other instanceof Player) // x
+
+				|| (this instanceof Player && other instanceof Missile) // x
+				|| (this instanceof Missile && other instanceof Player) // x
+
 		)
 			return;
-					
-		if (!(a instanceof PowerUp || b instanceof PowerUp)) {
-			a.Destroy();
-			b.Destroy();
+
+		if (!(this instanceof PowerUp || other instanceof PowerUp)) {
+			this.Destroy();
+			other.Destroy();
 			return;
 		}
 
 		if (p != null) {
-			if (a instanceof Player) {
-				((PowerUp) b).executeAction();
-				b.Destroy();
-			} else if (b instanceof Player) {
-				((PowerUp) a).executeAction();
-				a.Destroy();
+			if (this instanceof Player) {
+				((PowerUp) other).executeAction();
+				other.Destroy();
+			} else if (other instanceof Player) {
+				((PowerUp) this).executeAction();
+				this.Destroy();
 			}
 		}
 	}
-	
+
 	public void Destroy() {
 		Dead = true;
-		if (!(this instanceof Fire) && !(this instanceof PowerUp)){
+		if (!(this instanceof Fire) && !(this instanceof PowerUp)) {
 			explosion.play();
 			explosion.changeVolume(-15.0f);
 		}
 	}
 
-	protected Vector2D getCenter() {
+	public Vector2D getCenter() {
 		return new Vector2D(position.getX() + width / 2, position.getY() + height / 2);
 	}
 
 	public boolean isDead() {
 		return Dead;
 	}
-	
-	protected void collidesWithPiedra() {
-		
-		ArrayList<MovingObject> movingObjects = gameState.getMovingObjects();
 
-		for (MovingObject m : movingObjects) {
-			//MovingObject m = movingObjects.get(i);
-
-			if (m.equals(this))
-				continue;
-
-			double distance = m.getCenter().subtract(getCenter()).getMagnitude();
-
-			if (distance < m.width / 2 + width / 2 
-				//&& movingObjects.contains(this) 
-				&& !m.Dead 
-				&& !Dead) 
-			{
-				objectCollisionPiedra(m, this);
-			}
-		}
-	}
-
-	private void objectCollisionPiedra(MovingObject a, MovingObject b) {
+	public void handleCollisionWithRocks(MovingObject other) {
 
 		Player p = null;
 
-		if (a instanceof Player)
-			p = (Player) a;
-		else if (b instanceof Player)
-			p = (Player) b;
+		if (this instanceof Player)
+			p = (Player) this;
+		else if (other instanceof Player)
+			p = (Player) other;
 
 		if (p != null && p.isSpawning())
 			return;
-		
-		if ( // todo objeto collisiona excepto a - b y b - a:
 
-				//(a instanceof Enemy3 && b instanceof Rocks) 
-				 (a instanceof Rocks && b instanceof Enemy3)
-				//|| (a instanceof Enemy2 && b instanceof Rocks) 
-				|| (a instanceof Rocks && b instanceof Enemy2)
-				//|| (a instanceof Enemy && b instanceof Rocks) 
-				|| (a instanceof Rocks && b instanceof Enemy)
-				//|| (a instanceof FireE && b instanceof Rocks) 
-				|| (a instanceof Rocks && b instanceof FireE)
-				//|| (a instanceof Fire && b instanceof Rocks) 
-				|| (a instanceof Rocks && b instanceof Fire)
-				//|| (a instanceof Player && b instanceof Rocks) 
-				|| (a instanceof Rocks && b instanceof Player)
-				//|| (a instanceof Missile && b instanceof Rocks) 
-				|| (a instanceof Rocks && b instanceof Missile)
-				
+		if ((other instanceof Rocks && this instanceof Enemy3)
+				|| (other instanceof Rocks && this instanceof Enemy2)
+				|| (other instanceof Rocks && this instanceof Enemy)
+				|| (other instanceof Rocks && this instanceof FireE)
+				|| (other instanceof Rocks && this instanceof Fire)
+				|| (other instanceof Rocks && this instanceof Player)
+				|| (other instanceof Rocks && this instanceof Missile)
+
 		)
 			return;
-					
-		if (!(a instanceof PowerUp || b instanceof PowerUp)) {
-			//a.DestroyRocks();
-			b.DestroyRocks();
+
+		if (!(this instanceof PowerUp || other instanceof PowerUp)) {
+			other.DestroyRocks();
 			return;
 		}
 	}
-	
+
 	public void DestroyRocks() {
 		Dead = true;
+	}
+
+	public double getWidth() {
+		return width;
 	}
 }

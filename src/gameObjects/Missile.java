@@ -12,13 +12,12 @@ import states.GameState;
 public class Missile extends MovingObject {
 
 	public Missile(
-			Vector2D position, 
-			Vector2D velocity, 
-			double maxVel, 
-			double angle, 
+			Vector2D position,
+			Vector2D velocity,
+			double maxVel,
+			double angle,
 			BufferedImage texture,
-			GameState gameState)
-	{
+			GameState gameState) {
 		super(position, velocity, maxVel, texture, gameState);
 		this.angle = angle;
 		this.velocity = velocity.scale(maxVel);
@@ -41,8 +40,6 @@ public class Missile extends MovingObject {
 		if (position.getX() > Constants.WIDTH || position.getY() > Constants.HEIGHT) {
 			Destroy();
 		}
-
-		collidesWith();
 	}
 
 	@Override
@@ -62,12 +59,12 @@ public class Missile extends MovingObject {
 
 		at = AffineTransform.getTranslateInstance(position.getX(), position.getY());
 		at.rotate(
-				angle, 
-				width / 2, 
+				angle,
+				width / 2,
 				height / 2);
 		g2d.drawImage(
-				texture, 
-				at, 
+				texture,
+				at,
 				null);
 	}
 }

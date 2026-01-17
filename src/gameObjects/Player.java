@@ -335,7 +335,6 @@ public class Player extends MovingObject {
 		//
 		if (shieldOn)
 			shieldEffect.update(dt);
-		collidesWith();
 	}
 
 	public void setShield() {

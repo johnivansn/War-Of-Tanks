@@ -12,13 +12,12 @@ import states.GameState;
 public class Fire extends MovingObject {
 
 	public Fire(
-			Vector2D position, 
-			Vector2D velocity, 
-			double maxVel, 
-			double angle, 
+			Vector2D position,
+			Vector2D velocity,
+			double maxVel,
+			double angle,
 			BufferedImage texture,
-			GameState gameState) 
-	{
+			GameState gameState) {
 		super(position, velocity, maxVel, texture, gameState);
 		this.angle = angle;
 		this.velocity = velocity.scale(maxVel);
@@ -28,14 +27,12 @@ public class Fire extends MovingObject {
 	public void update(float dt) {
 
 		position = position.add(velocity);
-		if (position.getX() < 0 || 
-			position.getX() > Constants.WIDTH || 
-			position.getY() < 0 || 
-			position.getY() > Constants.HEIGHT) 
-		{
+		if (position.getX() < 0 ||
+				position.getX() > Constants.WIDTH ||
+				position.getY() < 0 ||
+				position.getY() > Constants.HEIGHT) {
 			Destroy();
 		}
-		collidesWith();
 	}
 
 	@Override
@@ -44,13 +41,13 @@ public class Fire extends MovingObject {
 
 		at = AffineTransform.getTranslateInstance(position.getX() - width / 2, position.getY());
 		at.rotate(
-				angle, 
+				angle,
 				width / 2,
 				0);
 
 		g2d.drawImage(
-				texture, 
-				at, 
+				texture,
+				at,
 				null);
 	}
 

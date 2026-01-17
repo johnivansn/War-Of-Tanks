@@ -115,7 +115,6 @@ public class Enemy3 extends MovingObject {
 				Destroy();
 			}
 		}
-		collidesWith();
 	}
 
 	@Override

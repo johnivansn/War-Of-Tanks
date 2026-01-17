@@ -20,11 +20,10 @@ public class PowerUp extends MovingObject {
 	private BufferedImage typeTexture;
 
 	public PowerUp(
-			Vector2D position, 
-			BufferedImage texture, 
-			Action action, 
-			GameState gameState)
-	{
+			Vector2D position,
+			BufferedImage texture,
+			Action action,
+			GameState gameState) {
 		super(position, new Vector2D(), 0, Assets.orb, gameState);
 		this.action = action;
 		this.typeTexture = texture;
@@ -46,9 +45,6 @@ public class PowerUp extends MovingObject {
 		if (duration > Constants.POWER_UP_DURATION) {
 			this.Destroy();
 		}
-
-		collidesWith();
-
 	}
 
 	@Override
@@ -60,19 +56,19 @@ public class PowerUp extends MovingObject {
 				position.getY() + Assets.orb.getHeight() / 2 - typeTexture.getHeight() / 2);
 
 		at.rotate(
-				angle, 
-				typeTexture.getWidth() / 2, 
+				angle,
+				typeTexture.getWidth() / 2,
 				typeTexture.getHeight() / 2);
 
 		g.drawImage(
-				Assets.orb, 
-				(int) position.getX(), 
-				(int) position.getY(), 
+				Assets.orb,
+				(int) position.getX(),
+				(int) position.getY(),
 				null);
 
 		g2d.drawImage(
-				typeTexture, 
-				at, 
+				typeTexture,
+				at,
 				null);
 	}
 }

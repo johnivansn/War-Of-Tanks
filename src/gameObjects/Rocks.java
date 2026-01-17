@@ -22,7 +22,6 @@ public class Rocks extends MovingObject {
 	public void update(float dt) {
 
 		if (tex.equals(Assets.piedra)) {
-			collidesWithPiedra();
 			this.Dead = false;
 		} else {
 			Vector2D playerPos = new Vector2D(gameState.getPlayer().getCenter());
@@ -34,7 +33,6 @@ public class Rocks extends MovingObject {
 					Destroy();
 				}
 			}
-			collidesWith();
 		}
 	}
 
@@ -57,5 +55,9 @@ public class Rocks extends MovingObject {
 	@Override
 	public Vector2D getCenter() {
 		return new Vector2D(position.getX(), position.getY() + height / 2);
+	}
+
+	public BufferedImage getTexture() {
+		return texture;
 	}
 }

@@ -188,8 +188,6 @@ public class Enemy2 extends MovingObject {
 				Destroy();
 			}
 		}
-
-		collidesWith();
 	}
 
 	@Override

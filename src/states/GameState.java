@@ -65,7 +65,7 @@ public class GameState extends State {
 	private long spawnTimeMissile;
 	private int n, pau;
 	private Sound explosion;
-	//private Random r = new Random();
+	// private Random r = new Random();
 
 	public GameState(int m) {
 		n = m;
@@ -253,7 +253,7 @@ public class GameState extends State {
 			if (a == 1) {
 				a++;
 				x = rand % 2 == 0 ? getRandom(50, 150) : getRandom(Constants.WIDTH - 150, Constants.WIDTH - 50);
-				y =  Constants.HEIGHT;
+				y = Constants.HEIGHT;
 				path.add(new Vector2D(x, y)); // punto de inicio
 
 				posY = getRandom(50, 150);
@@ -263,7 +263,7 @@ public class GameState extends State {
 				path.add(new Vector2D(posX, posY));
 			} else if (a == 2) {
 				a++;
-				x =  Constants.WIDTH;
+				x = Constants.WIDTH;
 				y = rand % 2 == 0 ? getRandom(Constants.HEIGHT - 150, Constants.HEIGHT - 50) : getRandom(50, 150);
 				path.add(new Vector2D(x, y)); // punto de inicio
 
@@ -275,7 +275,7 @@ public class GameState extends State {
 			} else if (a == 3) {
 				a++;
 				x = rand % 2 == 0 ? getRandom(Constants.WIDTH - 150, Constants.WIDTH - 50) : getRandom(50, 150);
-				y =  0;
+				y = 0;
 				path.add(new Vector2D(x, y)); // punto de inicio
 
 				posY = getRandom(Constants.HEIGHT - 150, Constants.HEIGHT - 50);
@@ -516,6 +516,35 @@ public class GameState extends State {
 
 	}
 
+	private void detectCollisions() {
+		int size = movingObjects.size();
+
+		for (int i = 0; i < size; i++) {
+			MovingObject objA = movingObjects.get(i);
+			if (objA.isDead())
+				continue;
+
+			for (int j = i + 1; j < size; j++) {
+				MovingObject objB = movingObjects.get(j);
+				if (objB.isDead())
+					continue;
+
+				double distance = objA.getCenter().subtract(objB.getCenter()).getMagnitude();
+				double minDistance = (objA.getWidth() + objB.getWidth()) / 2;
+
+				if (distance < minDistance) {
+					if (objA instanceof Rocks && ((Rocks) objA).getTexture().equals(Assets.piedra)) {
+						objA.handleCollisionWithRocks(objB);
+					} else if (objB instanceof Rocks && ((Rocks) objB).getTexture().equals(Assets.piedra)) {
+						objB.handleCollisionWithRocks(objA);
+					} else {
+						objA.handleCollision(objB);
+					}
+				}
+			}
+		}
+	}
+
 	public void update(float dt) {
 		pau += dt;
 		if (gameOver)
@@ -540,6 +569,8 @@ public class GameState extends State {
 				}
 
 			}
+
+			detectCollisions();
 
 			//
 			for (int i = 0; i < explosions.size(); i++) {
@@ -584,7 +615,7 @@ public class GameState extends State {
 			}
 
 			if (score > 500 && poder == false) {
-				if(KeyBoard.x) {
+				if (KeyBoard.x) {
 					playExplosion3(player.getPosition());
 					for (int i = 0; i < movingObjects.size(); i++) {
 						if (movingObjects.get(i) instanceof Player) {
@@ -657,34 +688,34 @@ public class GameState extends State {
 		drawName(g);
 		drawScore(g);
 		drawLives(g);
+		
 		// zona de spawn de enemy
-		/*
-		 * g.setColor(Color.WHITE);
-		 * g2d.drawRect(50, 50, (Constants.WIDTH / 2) - 100, (Constants.HEIGHT / 2) -
-		 * 100);
-		 * g2d.drawRect((Constants.WIDTH / 2) + 50, 50, (Constants.WIDTH / 2) - 100,
-		 * (Constants.HEIGHT / 2) - 100);
-		 * g2d.drawRect(50, (Constants.HEIGHT / 2) + 50, (Constants.WIDTH / 2) - 100,
-		 * (Constants.HEIGHT / 2) - 100);
-		 * g2d.drawRect((Constants.WIDTH / 2) + 50, 325 + 50, (Constants.WIDTH / 2) -
-		 * 100, (Constants.HEIGHT / 2) - 100);
-		 */
-		// recorrido de enemy2
-		/*
-		 * g.setColor(Color.CYAN);
-		 * g2d.drawLine(50, 0, 50, 650);
-		 * g2d.drawLine(150, 0, 150, 650);
-		 *
-		 * g2d.drawLine(1050, 0, 1050, 650);
-		 * g2d.drawLine(950, 0, 950, 650);
-		 *
-		 * g2d.drawLine(0, 50, 1100, 50);
-		 * g2d.drawLine(0, 150, 1100, 150);
-		 *
-		 * g2d.drawLine(0, 500, 1100, 500);
-		 * g2d.drawLine(0, 600, 1100, 600);
-		 */
+		boolean mostrar = false;
 
+		if (mostrar) {
+			g.setColor(Color.WHITE);
+			g2d.drawRect(50, 50, (Constants.WIDTH / 2) - 100, (Constants.HEIGHT / 2) - 100);
+			g2d.drawRect((Constants.WIDTH / 2) + 50, 50, (Constants.WIDTH / 2) - 100, (Constants.HEIGHT / 2) - 100);
+			g2d.drawRect(50, (Constants.HEIGHT / 2) + 50, (Constants.WIDTH / 2) - 100,
+					(Constants.HEIGHT / 2) - 100);
+			g2d.drawRect((Constants.WIDTH / 2) + 50, 325 + 50, (Constants.WIDTH / 2) -
+					100, (Constants.HEIGHT / 2) - 100);
+
+			// recorrido de enemy2
+
+			g.setColor(Color.CYAN);
+			g2d.drawLine(50, 0, 50, 650);
+			g2d.drawLine(150, 0, 150, 650);
+
+			g2d.drawLine(1050, 0, 1050, 650);
+			g2d.drawLine(950, 0, 950, 650);
+
+			g2d.drawLine(0, 50, 1100, 50);
+			g2d.drawLine(0, 150, 1100, 150);
+
+			g2d.drawLine(0, 500, 1100, 500);
+			g2d.drawLine(0, 600, 1100, 600);
+		}
 		if (KeyBoard.BtEsc) {
 			panel.draw(g);
 		}
