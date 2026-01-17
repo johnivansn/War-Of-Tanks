@@ -13,6 +13,8 @@ import java.util.Stack;
 import gameObjects.Enemy;
 import gameObjects.Enemy2;
 import gameObjects.Enemy3;
+import gameObjects.Fire;
+import gameObjects.FirePool;
 import gameObjects.Message;
 import gameObjects.Missile;
 import gameObjects.MovingObject;
@@ -42,6 +44,7 @@ public class GameState extends State {
 			Constants.HEIGHT / 2 - Assets.player.getHeight() / 2);
 
 	private Player player;
+	private FirePool firePool;
 	private ArrayList<MovingObject> movingObjects = new ArrayList<>();
 	private ArrayList<Animation> explosions = new ArrayList<>();
 	private ArrayList<Message> messages = new ArrayList<>();
@@ -81,7 +84,7 @@ public class GameState extends State {
 		movingObjects.add(player);
 		//
 		loopBackgroundMusic();
-
+		firePool = new FirePool(this);
 		gameOverTimer = 0;
 		// enemySpawner = enemySpawner2 = enemySpawner3 = enemySpawner4 = 1;
 		enemyCont = 1;
@@ -563,8 +566,12 @@ public class GameState extends State {
 			for (int i = movingObjects.size() - 1; i >= 0; i--) {
 				MovingObject mo = movingObjects.get(i);
 				mo.update(dt);
-				if (mo.isDead())
+				if (mo.isDead()) {
+					if (mo instanceof Fire) {
+						firePool.release((Fire) mo);
+					}
 					movingObjects.remove(i);
+				}
 			}
 
 			detectCollisions();
@@ -573,7 +580,8 @@ public class GameState extends State {
 			for (int i = explosions.size() - 1; i >= 0; i--) {
 				Animation anim = explosions.get(i);
 				anim.update(dt);
-				if (!anim.isRunning()) explosions.remove(i);
+				if (!anim.isRunning())
+					explosions.remove(i);
 			}
 			//
 			if (gameOverTimer > Constants.GAME_OVER_TIME) {
@@ -794,6 +802,14 @@ public class GameState extends State {
 
 	public Player getPlayer() {
 		return player;
+	}
+
+	public Fire acquireFire(Vector2D position, Vector2D direction, double angle, BufferedImage texture) {
+		return firePool.acquire(position, direction, angle, texture);
+	}
+
+	public void releaseFire(Fire fire) {
+		firePool.release(fire);
 	}
 
 	public boolean subtractLife(Vector2D position) {

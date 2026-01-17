@@ -69,11 +69,13 @@ public class Player extends MovingObject {
 	public void update(float dt) { // movimiento
 
 		fireRate += dt;
-		/* if (!activa) {
-			if (multiOn) {
-				multi += dt;
-			}
-		} */
+		/*
+		 * if (!activa) {
+		 * if (multiOn) {
+		 * multi += dt;
+		 * }
+		 * }
+		 */
 		if (activa && multiOn) {
 			multi += dt;
 		}
@@ -149,147 +151,116 @@ public class Player extends MovingObject {
 				temp = temp.setDirection(angle - 1.8f);// 1.9
 				leftGun = leftGun.add(temp);
 
-				Fire l = new Fire(
-						leftGun,
-						heading,
-						Constants.FIRE_VEL,
-						angle,
-						Assets.fire,
-						gameState);
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								leftGun,
+								heading,
+								angle,
+								Assets.fire));
 
-				Fire r = new Fire(
-						rightGun,
-						heading,
-						Constants.FIRE_VEL,
-						angle,
-						Assets.fire,
-						gameState);
-
-				gameState.getMovingObjects().add(0, l);
-				gameState.getMovingObjects().add(0, r);
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								rightGun,
+								heading,
+								angle,
+								Assets.fire));
 
 			} else if (multiOn) {
 
-				Fire delanteIzq = new Fire(
-						getCenter(),
-						heading.setDirection(angle - Math.PI / 2 + Math.PI / 16),
-						Constants.FIRE_VEL,
-						angle + Math.PI / 16,
-						Assets.fire,
-						gameState);
-
-				Fire delanteM = new Fire(
-						getCenter(),
-						heading,
-						Constants.FIRE_VEL,
-						angle,
-						Assets.fire,
-						gameState);
-
-				Fire delanteDer = new Fire(
-						getCenter(),
-						heading.setDirection(angle - Math.PI / 2 - Math.PI / 16 + Math.PI),
-						Constants.FIRE_VEL,
-						angle - Math.PI / 16 + Math.PI,
-						Assets.fire,
-						gameState);
+				// delanteIzq
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								getCenter(),
+								heading.setDirection(angle - Math.PI / 2 + Math.PI / 16),
+								angle + Math.PI / 16,
+								Assets.fire));
+				// delanteM
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								getCenter(),
+								heading,
+								angle,
+								Assets.fire));
+				// delanteDer
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								getCenter(),
+								heading.setDirection(angle - Math.PI / 2 - Math.PI / 16 + Math.PI),
+								angle - Math.PI / 16 + Math.PI,
+								Assets.fire));
 				// -------------------------------------------------
-				Fire atrasIzq = new Fire(
-						getCenter(),
-						heading.setDirection(angle - Math.PI / 2 + Math.PI / 16 + Math.PI),
-						Constants.FIRE_VEL,
-						angle + Math.PI / 16 + Math.PI,
-						Assets.fire,
-						gameState);
-
-				Fire atrasM = new Fire(
-						getCenter(),
-						heading.setDirection(angle - Math.PI / 2 - Math.PI),
-						Constants.FIRE_VEL,
-						angle + Math.PI,
-						Assets.fire,
-						gameState);
-
-				Fire atrasDer = new Fire(
-						getCenter(),
-						heading.setDirection(angle - Math.PI / 2 - Math.PI / 16),
-						Constants.FIRE_VEL,
-						angle - Math.PI / 16,
-						Assets.fire,
-						gameState);
+				// atrasIzq
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								getCenter(),
+								heading.setDirection(angle - Math.PI / 2 + Math.PI / 16 + Math.PI),
+								angle + Math.PI / 16 + Math.PI,
+								Assets.fire));
+				// atrasM
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								getCenter(),
+								heading.setDirection(angle - Math.PI / 2 - Math.PI),
+								angle + Math.PI,
+								Assets.fire));
+				// atrasDer
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								getCenter(),
+								heading.setDirection(angle - Math.PI / 2 - Math.PI / 16),
+								angle - Math.PI / 16,
+								Assets.fire));
 				// -------------------------------------------------
-				Fire arribaIzq = new Fire(
-						getCenter(),
-						heading.setDirection(angle - Math.PI / 2 + Math.PI / 16 - Math.PI / 2),
-						Constants.FIRE_VEL,
-						angle + Math.PI / 16 - Math.PI / 2,
-						Assets.fire,
-						gameState);
-
-				Fire arribaM = new Fire(
-						getCenter(),
-						heading.setDirection(angle - Math.PI / 2 - Math.PI / 2),
-						Constants.FIRE_VEL,
-						angle - Math.PI / 2,
-						Assets.fire,
-						gameState);
-
-				Fire arribaDer = new Fire(
-						getCenter(),
-						heading.setDirection(angle - Math.PI / 2 - Math.PI / 16 - Math.PI / 2),
-						Constants.FIRE_VEL,
-						angle - Math.PI / 16 - Math.PI / 2,
-						Assets.fire,
-						gameState);
+				// arribaIzq
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								getCenter(),
+								heading.setDirection(angle - Math.PI / 2 + Math.PI / 16 - Math.PI / 2),
+								angle + Math.PI / 16 - Math.PI / 2,
+								Assets.fire));
+				// arribaM
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								getCenter(),
+								heading.setDirection(angle - Math.PI / 2 - Math.PI / 2),
+								angle - Math.PI / 2,
+								Assets.fire));
+				// arribaDer
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								getCenter(),
+								heading.setDirection(angle - Math.PI / 2 - Math.PI / 16 - Math.PI / 2),
+								angle - Math.PI / 16 - Math.PI / 2,
+								Assets.fire));
 				// -------------------------------------------------
-				Fire abajoIzq = new Fire(
-						getCenter(),
-						heading.setDirection(angle - Math.PI / 2 + Math.PI / 16 + Math.PI / 2),
-						Constants.FIRE_VEL,
-						angle + Math.PI / 16 + Math.PI / 2,
-						Assets.fire,
-						gameState);
-
-				Fire abajoM = new Fire(
-						getCenter(),
-						heading.setDirection(angle - Math.PI / 2 + Math.PI / 2),
-						Constants.FIRE_VEL,
-						angle + Math.PI / 2,
-						Assets.fire,
-						gameState);
-
-				Fire abajoDer = new Fire(
-						getCenter(),
-						heading.setDirection(angle - Math.PI / 2 - Math.PI / 16 + Math.PI / 2),
-						Constants.FIRE_VEL,
-						angle - Math.PI / 16 + Math.PI / 2,
-						Assets.fire,
-						gameState);
-				// -------------------------------------------------
-
-				gameState.getMovingObjects().add(0, delanteIzq);
-				gameState.getMovingObjects().add(0, delanteM);
-				gameState.getMovingObjects().add(0, delanteDer);
-
-				gameState.getMovingObjects().add(0, atrasIzq);
-				gameState.getMovingObjects().add(0, atrasM);
-				gameState.getMovingObjects().add(0, atrasDer);
-
-				gameState.getMovingObjects().add(0, arribaIzq);
-				gameState.getMovingObjects().add(0, arribaM);
-				gameState.getMovingObjects().add(0, arribaDer);
-
-				gameState.getMovingObjects().add(0, abajoIzq);
-				gameState.getMovingObjects().add(0, abajoM);
-				gameState.getMovingObjects().add(0, abajoDer);
+				// abajoIzq
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								getCenter(),
+								heading.setDirection(angle - Math.PI / 2 + Math.PI / 16 + Math.PI / 2),
+								angle + Math.PI / 16 + Math.PI / 2,
+								Assets.fire));
+				// abajoM
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								getCenter(),
+								heading.setDirection(angle - Math.PI / 2 + Math.PI / 2),
+								angle + Math.PI / 2,
+								Assets.fire));
+				// abajoDer
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								getCenter(),
+								heading.setDirection(angle - Math.PI / 2 - Math.PI / 16 + Math.PI / 2),
+								angle - Math.PI / 16 + Math.PI / 2,
+								Assets.fire));
 			} else {
-				gameState.getMovingObjects().add(0, new Fire(
-						getCenter().add(heading.scale(width)),
-						heading,
-						Constants.FIRE_VEL,
-						angle,
-						Assets.fire,
-						gameState));
+				gameState.getMovingObjects().add(0,
+						gameState.acquireFire(
+								getCenter().add(heading.scale(width)),
+								heading,
+								angle,
+								Assets.fire));
 			}
 
 			fireRate = 0;

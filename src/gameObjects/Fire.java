@@ -23,6 +23,14 @@ public class Fire extends MovingObject {
 		this.velocity = velocity.scale(maxVel);
 	}
 
+	public void reset(Vector2D position, Vector2D velocity, double angle, BufferedImage texture) {
+		this.position = new Vector2D(position);
+		this.velocity = velocity.scale(maxVel);
+		this.angle = angle;
+		this.texture = texture;
+		this.Dead = false;
+	}
+
 	@Override
 	public void update(float dt) {
 
