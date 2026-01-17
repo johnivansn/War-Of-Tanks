@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import graphics.Assets;
 import input.Constants;
@@ -42,6 +43,7 @@ public class Window extends JFrame implements Runnable {
 		setResizable(false);
 		setLocationRelativeTo(null); // establecemos la ventana en el centro
 		// setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/tanks/tank.png")));
+		
 		canvas = new Canvas();
 		keyBoard = new KeyBoard();
 		mouseInput = new MouseInput();
@@ -65,7 +67,6 @@ public class Window extends JFrame implements Runnable {
 	}
 
 	private void update(float dt) {
-
 		keyBoard.update();
 		State.getCurrentState().update(dt);
 
@@ -81,18 +82,13 @@ public class Window extends JFrame implements Runnable {
 
 		g = bs.getDrawGraphics();
 
-		// -----------------------
-
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, Constants.WIDTH, Constants.HEIGHT);
 
 		State.getCurrentState().draw(g);
 
 		g.setColor(Color.WHITE);
-
 		g.drawString("" + AVERAGE_FPS, 10, 20);
-
-		// ---------------------
 
 		g.dispose();
 		bs.show();
@@ -118,21 +114,47 @@ public class Window extends JFrame implements Runnable {
 		init();
 
 		while (running) {
-			now = System.nanoTime();
-			delta += (now - lastTime) / TARGET_TIME;
-			time += (now - lastTime);
-			lastTime = now;
+			try {
+				now = System.nanoTime();
+				delta += (now - lastTime) / TARGET_TIME;
+				time += (now - lastTime);
+				lastTime = now;
 
-			if (delta >= 1) {
-				update((float) (delta * TARGET_TIME * 0.000001f));
-				draw();
-				delta--;
-				frames++;
-			}
-			if (time >= 1000000000) {
-				AVERAGE_FPS = frames;
-				frames = 0;
-				time = 0;
+				if (delta >= 1) {
+					try {
+						update((float) (delta * TARGET_TIME * 0.000001f));
+					} catch (Exception e) {
+						System.err.println("Error en update(): " + e.getMessage());
+						e.printStackTrace();
+					}
+					try {
+						draw();
+					} catch (Exception e) {
+						System.err.println("Error en draw(): " + e.getMessage());
+						e.printStackTrace();
+					}
+					delta--;
+					frames++;
+				}
+				if (time >= 1000000000) {
+					AVERAGE_FPS = frames;
+					frames = 0;
+					time = 0;
+				}
+			} catch (Exception e) {
+				System.err.println("Error crítico en game loop: " + e.getMessage());
+				e.printStackTrace();
+
+				int choice = JOptionPane.showConfirmDialog(
+						this,
+						"Error crítico en el juego. ¿Intentar continuar?",
+						"Error",
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.ERROR_MESSAGE);
+
+				if (choice != JOptionPane.YES_OPTION) {
+					running = false;
+				}
 			}
 		}
 		stop(); // detiene el programa
