@@ -2,6 +2,7 @@ package math;
 
 public class Vector2D {
 	private double x, y;
+	private static final double EPSILON = 0.0001;
 
 	public Vector2D(double x, double y) {
 		this.x = x;
@@ -39,6 +40,11 @@ public class Vector2D {
 
 	public Vector2D normalize() {
 		double magnitude = getMagnitude();
+
+		if (magnitude < EPSILON) {
+			return new Vector2D(0, 0);
+		}
+
 		return new Vector2D(x / magnitude, y / magnitude);
 	}
 
