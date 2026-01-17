@@ -87,20 +87,20 @@ public class Enemy2 extends MovingObject {
 				angle = angleD;
 			} else {
 				pathFollowing = currentNode.subtract(getCenter()).normalize().scale(maxVel)
-						.scale(1 / Constants.ENEMY_MASS * 3);
+						.scale(1 / Constants.ENEMY_MASS * Constants.SEEK_FORCE_MULTIPLIER);
 
-				angle += (angleD - angle) * 0.1;
+				angle += (angleD - angle) * Constants.ROTATION_SMOOTHING_FACTOR;
 			}
 		} else {
-			if (x > 3000) {
+			if (x > Constants.EXPLOSION_INTERVAL_1) {
 				gameState.playExplosion2(getCenter().add(new Vector2D(getRandom(0, 30), getRandom(0, 30))));
 				x = 0;
 			}
-			if (y > 4000) {
+			if (y > Constants.EXPLOSION_INTERVAL_2) {
 				gameState.playExplosion2(getCenter().add(new Vector2D(-getRandom(0, 30), -getRandom(0, 30))));
 				y = 0;
 			}
-			if (z > 5000) {
+			if (z > Constants.EXPLOSION_INTERVAL_3) {
 				gameState.playExplosion2(getCenter().add(new Vector2D(-getRandom(0, 30), getRandom(0, 30))));
 				z = 0;
 			}

@@ -88,4 +88,27 @@ public class Constants {
 	public static final long DOUBLE_GUN_TIME = 12000;
 
 	public static final int SCORE_STACK = 1000;
+
+	// Audio
+	public static final int SOUND_STOP_THRESHOLD = 8500;
+
+	// Power-ups
+	public static final long MULTI_FIRE_DURATION = 15000;
+
+	// IA
+	public static final double ROTATION_SMOOTHING_FACTOR = 0.1;
+	public static final double SEEK_FORCE_MULTIPLIER = 3.0;
+
+	// Editor
+	public static final double EDITOR_SCALE = 1.0 / 1.375;
+	public static final double GAME_SCALE = 1.375;
+
+	// UI
+	public static final double BUTTON_HOVER_SCALE = 1.05;
+
+	// Gameplay
+	public static final int WAVE_BLAST_UNLOCK_SCORE = 500;
+	public static final int EXPLOSION_INTERVAL_1 = 2000;
+	public static final int EXPLOSION_INTERVAL_2 = 3000;
+	public static final int EXPLOSION_INTERVAL_3 = 5000;
 }

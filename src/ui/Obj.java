@@ -13,7 +13,7 @@ import input.MouseInput;
 import math.Vector2D;
 
 public class Obj {
-	
+
 	private BufferedImage texture, textureR, textureO;
 	public boolean mouseIn, vis, m, limit;
 	private Vector2D position;
@@ -24,18 +24,18 @@ public class Obj {
 			Vector2D position,
 			boolean resize,
 			boolean posR) {
-		
+
 		textureO = textureR = texture;
-		
+
 		if (resize) {
 			// Ridemeciona la imagen
-			textureR = Resize.getResize(texture, 1 / 1.375);
+			textureR = Resize.getResize(texture, 1 / Constants.EDITOR_SCALE);
 			//
 		}
 		this.texture = textureR;
 		this.color = color;
 		this.position = position;
-		
+
 		if(posR) {
 		this.position = new Vector2D(
 				900 / 2 - this.texture.getWidth() / 2,
@@ -44,13 +44,13 @@ public class Obj {
 	}
 
 	public void update() {
-		
+
 		new Rectangle(
-				(int) (position.getX()), 
-				(int) (position.getY()), 
-				texture.getWidth(), 
+				(int) (position.getX()),
+				(int) (position.getY()),
+				texture.getWidth(),
 				texture.getHeight());
-		
+
 		/* if (!m) { // borrar ??
 			if (boundingBox.contains(MouseInput.X, MouseInput.Y)) {
 				mouseIn = true;
@@ -86,28 +86,28 @@ public class Obj {
 
 	public void draw(Graphics g) {
 		//Graphics2D g2d = (Graphics2D) g;
-		
+
 		g.drawImage(
-				texture, 
-				(int) (position.getX()), 
+				texture,
+				(int) (position.getX()),
 				(int) (position.getY()),
 				null);
-		
+
 		if (mouseIn) {
 			Graphics2D g2d = (Graphics2D) g;
 			g2d.setStroke(new BasicStroke(3));
 			g.setColor(color);
 			g.drawRect(
-				(int) (position.getX()), 
-				(int) (position.getY()), 
-				texture.getWidth(), 
+				(int) (position.getX()),
+				(int) (position.getY()),
+				texture.getWidth(),
 				texture.getHeight());
 		}
 	}
 	public BufferedImage getTexture() {
 		return textureO;
 	}
-	
+
 	public Vector2D getPosition() {
 		return position;
 	}

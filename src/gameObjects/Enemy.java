@@ -83,10 +83,13 @@ public class Enemy extends MovingObject {
 			if (index == 1) {
 				angle = angleD;
 			} else {
-				pathFollowing = currentNode.subtract(getCenter()).normalize().scale(maxVel)
-						.scale(1 / Constants.ENEMY_MASS * 3);
+				pathFollowing = currentNode.subtract(
+						getCenter()).
+						normalize().
+						scale(maxVel).
+						scale(1 / Constants.ENEMY_MASS * Constants.SEEK_FORCE_MULTIPLIER);
 
-				angle += (angleD - angle) * 0.1;
+				angle += (angleD - angle) * Constants.ROTATION_SMOOTHING_FACTOR;
 			}
 		}
 
@@ -147,7 +150,7 @@ public class Enemy extends MovingObject {
 			shoot.play();
 		}
 
-		if (shoot.getFramePosition() > 8500) {
+		if (shoot.getFramePosition() > Constants.SOUND_STOP_THRESHOLD) {
 			shoot.stop();
 		}
 

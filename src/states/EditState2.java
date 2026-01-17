@@ -27,7 +27,7 @@ public class EditState2 extends State {
 	private static String link;
 	private int posX, posY;
 	private int n, cont;
-	private double heightEdit = Constants.HEIGHT - Constants.HEIGHT / 1.375;
+	private double heightEdit = Constants.HEIGHT - Constants.HEIGHT / Constants.EDITOR_SCALE;
 
 	public EditState2() {
 		loopbackEdit();
@@ -221,8 +221,8 @@ public class EditState2 extends State {
 			if (objs.get(i).getTexture().equals(Assets.piedra)) {
 				type = "piedra";
 			}
-			posX = (int) (objs.get(i).getPosition().getX() * 1.375);
-			posY = (int) (objs.get(i).getPosition().getY() * 1.375 - heightEdit);
+			posX = (int) (objs.get(i).getPosition().getX() * Constants.GAME_SCALE);
+			posY = (int) (objs.get(i).getPosition().getY() * Constants.GAME_SCALE - heightEdit);
 			try {
 				ArrayList<ObjData> dataList = Area.readFile(link);
 				dataList.add(new ObjData(type, posX, posY));
@@ -251,8 +251,8 @@ public class EditState2 extends State {
 						texture,
 						Color.CYAN,
 						new Vector2D(
-								dataList.get(i).getPositionX() / 1.375,
-								dataList.get(i).getPositionY() / 1.375 + (heightEdit - 50)),
+								dataList.get(i).getPositionX() / Constants.GAME_SCALE,
+								dataList.get(i).getPositionY() / Constants.GAME_SCALE + (heightEdit - 50)),
 						true,
 						false));
 			}

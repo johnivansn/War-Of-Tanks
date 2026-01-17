@@ -18,21 +18,22 @@ import math.Vector2D;
 public class ChargerObjs {
 	private ArrayList<Button> buttons;
 	private int prt = 1;
-	private int n, cont, y; 
+	private int n, cont, y;
 	private int limit = Links.links.size();
 	private boolean delete = false;
+
 	public ChargerObjs(int y) {
-		
+
 		this.y = y;
 		Links.links = Links.getLinks();
 		buttons = new ArrayList<>();
 
 		buttons.add(new Button(
-				Assets.grey_left, 
+				Assets.grey_left,
 				Assets.green_left,
 				Constants.WIDTH / 2 - 100 / 2 - Assets.green_left.getWidth() * 2,
-				y + Assets.grey_buttonBig.getWidth() / 2 - Assets.green_left.getHeight() / 2 ,
-				"", 
+				y + Assets.grey_buttonBig.getWidth() / 2 - Assets.green_left.getHeight() / 2,
+				"",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -45,13 +46,13 @@ public class ChargerObjs {
 						}
 					}
 				}));
-		
+
 		buttons.add(new Button(
-				Assets.grey_right, 
+				Assets.grey_right,
 				Assets.green_right,
 				Constants.WIDTH / 2 + 100 / 2 + Assets.green_right.getWidth(),
-				y + Assets.grey_buttonBig.getWidth() / 2 - Assets.green_right.getHeight() / 2 ,
-				"", 
+				y + Assets.grey_buttonBig.getWidth() / 2 - Assets.green_right.getHeight() / 2,
+				"",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -64,13 +65,13 @@ public class ChargerObjs {
 						}
 					}
 				}));
-		
+
 		buttons.add(new Button(
-				Assets.dump, 
+				Assets.dump,
 				Assets.dump,
 				Constants.WIDTH / 2 + 325 / 2 + Assets.green_right.getWidth(),
 				y / 2 + Assets.grey_buttonBig.getWidth() / 2 - Assets.green_right.getHeight() / 2 - 5,
-				"", 
+				"",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -78,14 +79,14 @@ public class ChargerObjs {
 						if (n == 1) {
 							if (prt > 1) {
 								Constants.SELECT = prt--;
-								//Links.deletLink(prt + 1);
+								// Links.deletLink(prt + 1);
 								delete = true;
 							}
 						}
 					}
 				}));
 	}
-	
+
 	public void update(float dt) {
 		for (Button b : buttons) {
 			b.update();
@@ -95,14 +96,14 @@ public class ChargerObjs {
 			n = cont = 0;
 		}
 	}
-	
+
 	public void draw(Graphics g) {
-		//pongo el "0.3333" en lugar de "1/3" porque en Resize() mandaba error
-		
+		// pongo el "0.3333" en lugar de "1/3" porque en Resize() mandaba error
+
 		g.drawImage(
-				Resize.getResize(Assets.miniCampo, 0.3333), 
+				Resize.getResize(Assets.miniCampo, 1.0/3.0),
 				Constants.WIDTH / 2 - Constants.WIDTH / 3 / 2,
-				y - 210, 
+				y - 210,
 				null);
 		//
 		BufferedImage image = null;
@@ -119,10 +120,11 @@ public class ChargerObjs {
 					if (dataList.get(i).getType().equals("piedra")) {
 						image = Assets.piedra;
 					}
-					BufferedImage imageN = Resize.getResize(image, 0.3333);
+					BufferedImage imageN = Resize.getResize(image, 1.0/3.0);
 					g.drawImage(
 							imageN,
-							(dataList.get(i).getPositionX() / 3) + (Constants.WIDTH / 2 - Constants.WIDTH / 3 / 2) - imageN.getWidth() / 2,
+							(dataList.get(i).getPositionX() / 3) + (Constants.WIDTH / 2 - Constants.WIDTH / 3 / 2)
+									- imageN.getWidth() / 2,
 							(dataList.get(i).getPositionY() / 3) + y - 210, null);
 
 				}
@@ -133,7 +135,7 @@ public class ChargerObjs {
 			Links.deleteLink(prt + 1);
 			delete = false;
 		}
-		
+
 		//
 		g.fillRect(
 				Constants.WIDTH / 2 + 325 / 2 + Assets.green_right.getWidth() - 5,
@@ -145,22 +147,22 @@ public class ChargerObjs {
 			b.draw(g);
 		}
 		int width = 100, height = 45, posX, posY;
-		
+
 		g.setColor(Color.LIGHT_GRAY);
 		g.fillRect(
 				posX = Constants.WIDTH / 2 - width / 2,
-				posY = y + 2 * 45 / 3, 
-				width, 
+				posY = y + 2 * 45 / 3,
+				width,
 				height);
-		
+
 		Text.drawText(
-				g, 
+				g,
 				(Constants.SELECT = prt) + "",
 				new Vector2D(
-						posX + width / 2, 
+						posX + width / 2,
 						posY + height / 0.75),
-				true, 
-				Color.DARK_GRAY, 
+				true,
+				Color.DARK_GRAY,
 				Assets.fontBig);
 	}
 }

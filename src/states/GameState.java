@@ -604,7 +604,7 @@ public class GameState extends State {
 				powerUpSpawner = 0;
 			}
 
-			if (score > 500 && expFinal == false) {
+			if (score > Constants.WAVE_BLAST_UNLOCK_SCORE && expFinal == false) {
 				Message lifeLostMesg1 = new Message(
 						player.getPosition(),
 						false,
@@ -616,7 +616,7 @@ public class GameState extends State {
 				expFinal = true;
 			}
 
-			if (score > 500 && poder == false) {
+			if (score > Constants.WAVE_BLAST_UNLOCK_SCORE && poder == false) {
 				if (KeyBoard.x) {
 					playExplosion3(player.getPosition());
 					for (int i = 0; i < movingObjects.size(); i++) {

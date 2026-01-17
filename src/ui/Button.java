@@ -11,6 +11,7 @@ import math.Vector2D;
 import graphics.Assets;
 import graphics.Resize;
 import graphics.Text;
+import input.Constants;
 import input.MouseInput;
 
 public class Button {
@@ -23,7 +24,6 @@ public class Button {
 	private Action action;
 	private String text;
 	private int x, y;
-	private static final double HOVER_SCALE = 1.05;
 
 	public Button(
 			BufferedImage mouseOutImg,
@@ -45,7 +45,7 @@ public class Button {
 				mouseInImg.getHeight());
 
 		this.action = action;
-		this.mouseInImgScaled = Resize.getResize(mouseInImg, HOVER_SCALE);
+		this.mouseInImgScaled = Resize.getResize(mouseInImg, Constants.BUTTON_HOVER_SCALE);
 	}
 
 	public void update() {

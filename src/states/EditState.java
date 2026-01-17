@@ -25,8 +25,8 @@ public class EditState extends State {
 	private static String link;
 	private int posX, posY;
 	private int n = 0, cont;
-	private double heightEdit = Constants.HEIGHT - Constants.HEIGHT / 1.375;
-	
+	private double heightEdit = Constants.HEIGHT - Constants.HEIGHT / Constants.EDITOR_SCALE;
+
 	public EditState() {
 		loopbackEdit();
 		buttons = new ArrayList<>();
@@ -35,14 +35,14 @@ public class EditState extends State {
 				Assets.dump,
 				Color.WHITE,
 				new Vector2D(50, (int) (heightEdit - 50)),
-				true, 
+				true,
 				false);
-		
+
 		buttonsN.add(new Button(
-				Assets.Item1, 
+				Assets.Item1,
 				Assets.Item1,
 				935,230,
-				"", 
+				"",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -52,12 +52,12 @@ public class EditState extends State {
 						}
 					}
 				}));
-		
+
 		buttonsN.add(new Button(
-				Assets.Item2, 
+				Assets.Item2,
 				Assets.Item2,
 				930,360,
-				"", 
+				"",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -67,12 +67,12 @@ public class EditState extends State {
 						}
 					}
 				}));
-		
+
 		buttonsN.add(new Button(
-				Assets.piedra, 
+				Assets.piedra,
 				Assets.piedra,
 				950,540,
-				"", 
+				"",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -82,12 +82,12 @@ public class EditState extends State {
 						}
 					}
 				}));
-		
+
 		buttons.add(new Button(
-				Assets.grey_button, 
+				Assets.grey_button,
 				Assets.blue_button,
 				100,50,
-				"MENU", 
+				"MENU",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -99,12 +99,12 @@ public class EditState extends State {
 						}
 					}
 				}));
-		
+
 		buttons.add(new Button(
-				Assets.grey_button, 
+				Assets.grey_button,
 				Assets.blue_button,
 				900 / 2 - Assets.blue_button.getWidth() / 2, 50,
-				"REINICIAR", 
+				"REINICIAR",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -114,12 +114,12 @@ public class EditState extends State {
 						}
 					}
 				}));
-		
+
 		buttons.add(new Button(
-				Assets.grey_button, 
+				Assets.grey_button,
 				Assets.blue_button,
 				800 - Assets.blue_button.getWidth(), 50,
-				"GUARDAR", 
+				"GUARDAR",
 				new Action() {
 					@Override
 					public void doAction() {
@@ -134,26 +134,26 @@ public class EditState extends State {
 					}
 				}));
 	}
-	
+
 	@Override
 	public void update(float dt) {
 		cont += dt;
 		if (cont > 2000) {
 			n = cont = 0;
 		}
-		
+
 		dump.update();
-		
-		//Basurero 
-        dump.vis = true; 
-        objs.removeIf(obj -> obj.mouseIn && dump.mouseIn); 
 
-        buttonsN.forEach(Button::update); 
-        buttons.forEach(Button::update); 
+		//Basurero
+        dump.vis = true;
+        objs.removeIf(obj -> obj.mouseIn && dump.mouseIn);
 
-        objs.forEach(a -> { 
-            a.update(); 
-            a.limit = true; 
+        buttonsN.forEach(Button::update);
+        buttons.forEach(Button::update);
+
+        objs.forEach(a -> {
+            a.update();
+            a.limit = true;
         });
 
 		for (int i = 0; i < objs.size(); i++) {
@@ -174,27 +174,27 @@ public class EditState extends State {
 	@Override
 	public void draw(Graphics g) {
 		g.drawImage(Assets.editMenu, 0, 0, null);
-		
+
 		dump.draw(g);
-		
+
 		for (Button b : buttonsN) {
 			b.resize = b.mouseIn;
 			b.draw(g);
 		}
-		
+
 		for (Button b : buttons) {
 			b.draw(g);
 		}
-		
+
 		for (Obj a : objs) {
 			a.draw(g);
 		}
 	}
-	
+
 	public  ArrayList<Obj> getObjs() {
 		return objs ;
 	}
-	
+
 	public void save() {
 		link = Links.newLink();
 		for (int i = 0; i < objs.size(); i++) {
@@ -208,8 +208,8 @@ public class EditState extends State {
 			if (objs.get(i).getTexture().equals(Assets.piedra)) {
 				type = "piedra";
 			}
-			posX = (int) (objs.get(i).getPosition().getX() * 1.375);
-			posY = (int) (objs.get(i).getPosition().getY() * 1.375 - heightEdit);
+			posX = (int) (objs.get(i).getPosition().getX() * Constants.GAME_SCALE);
+			posY = (int) (objs.get(i).getPosition().getY() * Constants.GAME_SCALE - heightEdit);
 			try {
 				ArrayList<ObjData> dataList = Area.readFile(link);
 				dataList.add(new ObjData(type, posX, posY));

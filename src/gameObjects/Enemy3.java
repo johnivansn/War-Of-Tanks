@@ -70,15 +70,15 @@ public class Enemy3 extends MovingObject {
 		x += dt;
 		y += dt;
 		z += dt;
-		if (x > 2000) {
+		if (x > Constants.EXPLOSION_INTERVAL_1) {
 			gameState.playExplosion2(getCenter());// ).add(new Vector2D(getRandom(0, 5), getRandom(0, 5))));
 			x = 0;
 		}
-		if (y > 3000) {
+		if (y > Constants.EXPLOSION_INTERVAL_2) {
 			gameState.playExplosion2(getCenter());// .add(new Vector2D(-getRandom(0, 5), -getRandom(0, 5))));
 			y = 0;
 		}
-		if (z > 5000) {
+		if (z > Constants.EXPLOSION_INTERVAL_3) {
 			gameState.playExplosion2(getCenter());// .add(new Vector2D(-getRandom(0, 5), getRandom(0, 5))));
 			z = 0;
 		}
@@ -97,10 +97,13 @@ public class Enemy3 extends MovingObject {
 			if (index == 1) {
 				angle = angleD;
 			} else {
-				pathFollowing = currentNode.subtract(getCenter()).normalize().scale(maxVel)
-						.scale(1 / Constants.ENEMY_MASS * 3);
+				pathFollowing = currentNode.subtract(
+					getCenter()).
+					normalize().
+					scale(maxVel).
+					scale(1 / Constants.ENEMY_MASS * Constants.SEEK_FORCE_MULTIPLIER);
 
-				angle += (angleD - angle) * 0.1;
+				angle += (angleD - angle) * Constants.ROTATION_SMOOTHING_FACTOR;
 			}
 		}
 

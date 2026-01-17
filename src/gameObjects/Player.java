@@ -116,7 +116,7 @@ public class Player extends MovingObject {
 			doubleGunOn = false;
 			doubleGunTime = 0;
 		}
-		if (multi > 15000) {
+		if (multi > Constants.MULTI_FIRE_DURATION) {
 			multiOn = false;
 			multi = 0;
 		}
@@ -268,7 +268,7 @@ public class Player extends MovingObject {
 
 		}
 
-		if (shoot.getFramePosition() > 8500) {
+		if (shoot.getFramePosition() > Constants.SOUND_STOP_THRESHOLD) {
 			shoot.stop();
 		}
 
