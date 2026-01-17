@@ -5,8 +5,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import math.Vector2D;
@@ -130,12 +128,8 @@ public class Enemy2 extends MovingObject {
 			angleF = d;
 		}
 
-		BigDecimal op = BigDecimal.valueOf(angleF);
-		op = op.setScale(1, RoundingMode.HALF_UP);
-		a = op.doubleValue();
-		BigDecimal io = BigDecimal.valueOf(d);
-		io = io.setScale(1, RoundingMode.HALF_UP);
-		d = io.doubleValue();
+		a = Math.round(angleF * 10.0) / 10.0;
+		d = Math.round(d * 10.0) / 10.0;
 
 		if (angleF != d) { // manipula la rotacion
 			if (a < d) {
@@ -229,12 +223,13 @@ public class Enemy2 extends MovingObject {
 
 		g.setColor(Color.RED);
 
-		/*for (int i = 1; i < path.size(); i++) {// prueba
-			g.drawOval((int) path.get(i).getX(), (int) path.get(i).getY(), 10, 10);
-		}
-		g.setColor(Color.GREEN);
-		g.drawOval((int) path.get(0).getX(), (int) path.get(0).getY(), 10, 10);
-*/
+		/*
+		 * for (int i = 1; i < path.size(); i++) {// prueba
+		 * g.drawOval((int) path.get(i).getX(), (int) path.get(i).getY(), 10, 10);
+		 * }
+		 * g.setColor(Color.GREEN);
+		 * g.drawOval((int) path.get(0).getX(), (int) path.get(0).getY(), 10, 10);
+		 */
 	}
 
 	private static int getRandom(int min, int max) { // genera N aleatorio de min a max
@@ -244,7 +239,8 @@ public class Enemy2 extends MovingObject {
 	private void datos() {
 		toPlayer = gameState.getPlayer().getCenter().subtract(getCenter()).normalize();
 		currentAngleD = toPlayer.getAngle();
-		currentAngleD += Math.random() * Constants.ENEMY_ANGLE_RANGE - Constants.ENEMY_ANGLE_RANGE / 2;// altera la punteria
+		currentAngleD += Math.random() * Constants.ENEMY_ANGLE_RANGE - Constants.ENEMY_ANGLE_RANGE / 2;// altera la
+																										// punteria
 
 		toPlayer = toPlayer.setDirection(currentAngleD);
 		d = currentAngleD += Math.PI / 2;

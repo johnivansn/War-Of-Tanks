@@ -4,8 +4,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import math.Vector2D;
@@ -115,10 +113,8 @@ public class Enemy extends MovingObject {
 		}
 
 		// Se redondea el valor de angleF y d a 1 decimal
-		BigDecimal op = BigDecimal.valueOf(angleF).setScale(1, RoundingMode.HALF_UP);
-		angleF = op.doubleValue();
-		BigDecimal io = BigDecimal.valueOf(d).setScale(1, RoundingMode.HALF_UP);
-		d = io.doubleValue();
+		angleF = Math.round(angleF * 10.0) / 10.0;
+		d = Math.round(d * 10.0) / 10.0;
 
 		// Manipula la rotación de acuerdo al valor de a y d
 		if (angleF != d) {
