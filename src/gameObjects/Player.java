@@ -22,11 +22,11 @@ public class Player extends MovingObject {
 
 	private boolean spawning, visible;
 
-	private long spawnTime, flickerTime, shieldTime, doubleScoreTime, fastFireTime, doubleGunTime, multi;
+	private long spawnTime, flickerTime, multi;
 
 	private Sound shoot, loose;
 
-	private boolean shieldOn, doubleScoreOn, fastFireOn, doubleGunOn, multiOn, activa;
+	private boolean multiOn, activa;
 
 	private Animation shieldEffect;
 
@@ -51,9 +51,6 @@ public class Player extends MovingObject {
 		fireRate = 0;
 		spawnTime = 0;
 		flickerTime = 0;
-		shieldTime = 0;
-		fastFireTime = 0;
-		doubleGunTime = 0;
 		multi = 0;
 
 		shoot = new Sound(Assets.enemyShoot);
@@ -86,39 +83,9 @@ public class Player extends MovingObject {
 
 		powerUpState.update(dt);
 
-		if (!shieldOn && powerUpState.isActive(PowerUpTypes.SHIELD)) {
-			shieldOn = true;
-		}
-		if (shieldOn && !powerUpState.isActive(PowerUpTypes.SHIELD)) {
-			shieldOn = false;
-			shieldTime = 0;
-		}
-
-		if (!doubleScoreOn && powerUpState.isActive(PowerUpTypes.SCORE_X2)) {
-			doubleScoreOn = true;
-		}
-		if (doubleScoreOn && !powerUpState.isActive(PowerUpTypes.SCORE_X2)) {
-			doubleScoreOn = false;
-			doubleScoreTime = 0;
-		}
-
-		if (!fastFireOn && powerUpState.isActive(PowerUpTypes.FASTER_FIRE)) {
-			fastFireOn = true;
-			fireSpeed = Constants.FIRE_RATE / 2;
-		}
-		if (fastFireOn && !powerUpState.isActive(PowerUpTypes.FASTER_FIRE)) {
-			fastFireOn = false;
-			fastFireTime = 0;
-			fireSpeed = Constants.FIRE_RATE;
-		}
-
-		if (!doubleGunOn && powerUpState.isActive(PowerUpTypes.DOUBLE_GUN)) {
-			doubleGunOn = true;
-		}
-		if (doubleGunOn && !powerUpState.isActive(PowerUpTypes.DOUBLE_GUN)) {
-			doubleGunOn = false;
-			doubleGunTime = 0;
-		}
+		fireSpeed = powerUpState.isActive(PowerUpTypes.FASTER_FIRE)
+				? Constants.FIRE_RATE / 2
+				: Constants.FIRE_RATE;
 
 		if (multi > Constants.MULTI_FIRE_DURATION) {
 			multiOn = false;
@@ -148,7 +115,7 @@ public class Player extends MovingObject {
 		if (!KeyBoard.SHOOT || fireRate <= fireSpeed || spawning)
 			return;
 
-		if (doubleGunOn) {
+		if (isDoubleGunOn()) {
 			shootDoubleGun();
 		} else if (multiOn) {
 			shootMulti();
@@ -314,7 +281,7 @@ public class Player extends MovingObject {
 	}
 
 	private void updateVisualEffects(float dt) {
-		if (shieldOn)
+		if (isShieldOn())
 			shieldEffect.update(dt);
 	}
 
@@ -339,7 +306,7 @@ public class Player extends MovingObject {
 		if (multiOn)
 			multi = 0;
 		multiOn = true;
-		shieldOn = false;
+		powerUpState.activate(PowerUpTypes.SHIELD, 0);
 	}
 
 	@Override
@@ -369,7 +336,7 @@ public class Player extends MovingObject {
 
 		Graphics2D g2d = (Graphics2D) g;
 
-		if (shieldOn) {
+		if (isShieldOn()) {
 			BufferedImage currentFrame = shieldEffect.getCurrentFrame();
 			AffineTransform at3 = AffineTransform.getTranslateInstance(
 					position.getX() - currentFrame.getWidth() / 2 + width / 2,
@@ -393,7 +360,7 @@ public class Player extends MovingObject {
 				width / 2,
 				height / 2);
 
-		if (doubleGunOn) {
+		if (isDoubleGunOn()) {
 			g2d.drawImage(Assets.doubleGunPlayer, at, null);
 		} else if (multiOn) {
 			g2d.drawImage(Resize.getResize(Assets.doubleGunPlayer, 1 / 1.15), at, null);
@@ -407,11 +374,15 @@ public class Player extends MovingObject {
 	}
 
 	public boolean isShieldOn() {
-		return shieldOn;
+		return powerUpState.isActive(PowerUpTypes.SHIELD);
 	}
 
 	public boolean isDoubleScoreOn() {
-		return doubleScoreOn;
+		return powerUpState.isActive(PowerUpTypes.SCORE_X2);
+	}
+
+	public boolean isDoubleGunOn() {
+		return powerUpState.isActive(PowerUpTypes.DOUBLE_GUN);
 	}
 
 	public boolean isMulti() {
