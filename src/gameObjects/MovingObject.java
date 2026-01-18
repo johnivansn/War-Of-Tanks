@@ -7,6 +7,7 @@ import math.Vector2D;
 import graphics.Assets;
 import graphics.Sound;
 import states.GameState;
+import gameObjects.CollisionMatrix.CollisionResult;
 
 public abstract class MovingObject extends GameObject {
 
@@ -19,6 +20,7 @@ public abstract class MovingObject extends GameObject {
 	protected GameState gameState;
 
 	private Sound explosion;
+	private static final CollisionMatrix collisionMatrix = new CollisionMatrix();
 
 	protected boolean Dead;
 
@@ -51,53 +53,26 @@ public abstract class MovingObject extends GameObject {
 		if (p != null && p.isSpawning())
 			return;
 
-		if ((this instanceof FireE && other instanceof FireE)
+		CollisionResult result = collisionMatrix.getResult(this, other);
 
-				|| (this instanceof Enemy && other instanceof Missile)
-				|| (this instanceof Missile && other instanceof Enemy)
-				|| (this instanceof Enemy2 && other instanceof Missile)
-				|| (this instanceof Missile && other instanceof Enemy2)
-
-				|| (this instanceof Enemy3 && other instanceof Missile)
-				|| (this instanceof Missile && other instanceof Enemy3)
-
-				|| (this instanceof Enemy && other instanceof FireE)
-				|| (this instanceof FireE && other instanceof Enemy)
-
-				|| (this instanceof Enemy2 && other instanceof FireE)
-				|| (this instanceof FireE && other instanceof Enemy2)
-
-				|| (this instanceof Enemy3 && other instanceof FireE)
-				|| (this instanceof FireE && other instanceof Enemy3)
-
-				|| (this instanceof Fire && other instanceof Player)
-				|| (this instanceof Player && other instanceof Fire)
-
-				|| (this instanceof Fire && other instanceof Fire)
-
-				|| (this instanceof Player && other instanceof FireE) // x
-				|| (this instanceof FireE && other instanceof Player) // x
-
-				|| (this instanceof Player && other instanceof Missile) // x
-				|| (this instanceof Missile && other instanceof Player) // x
-
-		)
-			return;
-
-		if (!(this instanceof PowerUp || other instanceof PowerUp)) {
-			this.Destroy();
-			other.Destroy();
-			return;
-		}
-
-		if (p != null) {
-			if (this instanceof Player) {
-				((PowerUp) other).executeAction();
-				other.Destroy();
-			} else if (other instanceof Player) {
-				((PowerUp) this).executeAction();
+		switch (result) {
+			case BOTH_DESTROYED:
 				this.Destroy();
-			}
+				other.Destroy();
+				break;
+			case NONE:
+				break;
+			case POWER_UP_CONSUMED:
+				if (p != null) {
+					if (this instanceof Player) {
+						((PowerUp) other).executeAction();
+						other.Destroy();
+					} else if (other instanceof Player) {
+						((PowerUp) this).executeAction();
+						this.Destroy();
+					}
+				}
+				break;
 		}
 	}
 
