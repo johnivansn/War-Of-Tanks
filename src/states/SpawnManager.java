@@ -219,53 +219,21 @@ public class SpawnManager {
 	}
 
 	private void spawnMissiles() {
-		int a = getRandom(1, 4);
-		Vector2D headingRandom;
-		double angleMissile;
+	MissileDirection direction = MissileDirection.random();
+	Vector2D heading = direction.getHeading();
+	double angle = direction.getMissileAngle(heading);
 
-		if (a == 1) {// izq arriba a der abajo
-			headingRandom = new Vector2D(0, 1).setDirection(Math.random());
-			angleMissile = headingRandom.getAngle() + Math.PI / 2;
-		} else if (a == 2) {// der abajo a izq arriba
-			headingRandom = new Vector2D(0, 1).setDirection(Math.random() + Math.PI);
-			angleMissile = headingRandom.getAngle() + Math.PI / 2;
-		} else if (a == 3) {// der arriba a izq abajo
-			headingRandom = new Vector2D(0, 1).setDirection(Math.random() + Math.PI / 2);
-			angleMissile = headingRandom.getAngle() + Math.PI / 2;
-		} else {// izq abajo a der arriba
-			headingRandom = new Vector2D(0, 1).setDirection(Math.random() - Math.PI / 2);
-			angleMissile = headingRandom.getAngle() + Math.PI / 2;
-		}
-
-		for (int i = 0; i < missileCount; i++) {
-			double x, y;
-			if (a == 1) {
-				// izq arriba a der abajo
-				x = i % 2 == 0 ? (Math.random() * Constants.WIDTH - 100) : 0;
-				y = i % 2 == 0 ? 0 : (Math.random() * Constants.HEIGHT - 100);
-			} else if (a == 2) {
-				// der abajo a izq arriba
-				x = i % 2 == 0 ? (Math.random() * Constants.WIDTH - 100) : Constants.WIDTH - 10;
-				y = i % 2 == 0 ? Constants.HEIGHT - 10 : (Math.random() * Constants.HEIGHT - 100);
-			} else if (a == 3) {
-				// der arriba a izq abajo
-				x = i % 2 == 0 ? (Math.random() * Constants.WIDTH - 100) : Constants.WIDTH - 10;
-				y = i % 2 == 0 ? 0 : (Math.random() * Constants.HEIGHT - 100);
-			} else {
-				// izq abajo a der arriba
-				x = i % 2 == 0 ? (Math.random() * Constants.WIDTH - 100) : 0;
-				y = i % 2 == 0 ? Constants.HEIGHT - 10 : (Math.random() * Constants.HEIGHT - 100);
-			}
-
-			gameState.getMovingObjects().add(new Missile(
-					new Vector2D(x, y),
-					headingRandom,
-					Constants.MISSILE_VEL * Math.random() + 2,
-					angleMissile,
-					Assets.missile,
-					gameState));
-		}
+	for (int i = 0; i < missileCount; i++) {
+		Vector2D spawnPos = direction.getSpawnPosition(i);
+		gameState.getMovingObjects().add(new Missile(
+				spawnPos,
+				heading,
+				Constants.MISSILE_VEL * Math.random() + 2,
+				angle,
+				Assets.missile,
+				gameState));
 	}
+}
 
 	private void spawnPowerUp() {
 		final int x = (int) ((Constants.WIDTH - Assets.orb.getWidth()) * Math.random());

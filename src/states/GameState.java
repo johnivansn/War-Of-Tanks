@@ -19,6 +19,7 @@ import gameObjects.MovingObject;
 import gameObjects.Player;
 import gameObjects.PowerUpTypes;
 import gameObjects.Rocks;
+import gameObjects.SpecialAbility;
 import graphics.Animation;
 import graphics.Assets;
 import graphics.Sound;
@@ -57,12 +58,10 @@ public class GameState extends State {
 
 	private long gameOverTimer;
 	private boolean gameOver;
-	private boolean poder = false;
-	private boolean expFinal = false;
+	private SpecialAbility waveBlast;
 
 	private int n, pau;
 	private Sound explosion;
-	// private Random r = new Random();
 
 	public GameState(int m) {
 		n = m;
@@ -84,6 +83,7 @@ public class GameState extends State {
 		pau = 0;
 		gameOver = false;
 		explosion = new Sound(Assets.poderShoot);
+		waveBlast = new SpecialAbility(Constants.WAVE_BLAST_UNLOCK_SCORE, 0);
 
 	}
 
@@ -383,34 +383,31 @@ public class GameState extends State {
 				loopTheme();
 			}
 			//
-			if (score > Constants.WAVE_BLAST_UNLOCK_SCORE && expFinal == false) {
-				Message lifeLostMesg1 = new Message(
-						player.getPosition(),
+			waveBlast.checkUnlock(score);
+
+			if (waveBlast.justUnlocked()) {
+				messages.add(new Message(
+						new Vector2D(Constants.WIDTH / 2, Constants.HEIGHT / 2),
 						false,
 						"ONDA EXPLOSIVA DISPONIBLE",
 						Color.RED,
 						false,
-						Assets.fontMed);
-				messages.add(lifeLostMesg1);
-				expFinal = true;
+						Assets.fontMed));
 			}
 
-			if (score > Constants.WAVE_BLAST_UNLOCK_SCORE && poder == false) {
-				if (KeyBoard.x) {
-					playExplosion3(player.getPosition());
-					for (int i = 0; i < movingObjects.size(); i++) {
-						if (movingObjects.get(i) instanceof Player) {
-
-						} else if (movingObjects.get(i) instanceof Rocks) {
-
-						} else {
-							movingObjects.get(i).Destroy();
-						}
-						explosion.play();
-						poder = true;
+			if (KeyBoard.x && waveBlast.canUse()) {
+				playExplosion3(player.getPosition());
+				for (int i = 0; i < movingObjects.size(); i++) {
+					if (!(movingObjects.get(i) instanceof Player ||
+							movingObjects.get(i) instanceof Rocks)) {
+						movingObjects.get(i).Destroy();
 					}
 				}
+				explosion.play();
+				waveBlast.use();
 			}
+
+			waveBlast.update(dt);
 
 			for (int i = 0; i < movingObjects.size(); i++)
 				if (movingObjects.get(i) instanceof Enemy)
