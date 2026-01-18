@@ -17,6 +17,9 @@ import org.json.JSONObject;
 
 public class Area {
 
+	private static final int MAX_RETRIES = 5;
+	private static final long RETRY_DELAY_MS = 100;
+
 	public static ArrayList<ObjData> readFile(String link) throws FileNotFoundException {
 		ArrayList<ObjData> dataList = new ArrayList<>();
 		File file = new File(link);
@@ -24,17 +27,24 @@ public class Area {
 		if (!file.exists() || file.length() == 0)
 			return dataList;
 
-		JSONTokener parser = new JSONTokener(new FileInputStream(file));
-		JSONArray jsonList = new JSONArray(parser);
+		try (FileInputStream fis = new FileInputStream(file)) {
+			JSONTokener parser = new JSONTokener(fis);
+			JSONArray jsonList = new JSONArray(parser);
 
-		for (int i = 0; i < jsonList.length(); i++) {
-			JSONObject obj = (JSONObject) jsonList.get(i);
-			ObjData data = new ObjData();
+			for (int i = 0; i < jsonList.length(); i++) {
+				JSONObject obj = (JSONObject) jsonList.get(i);
+				ObjData data = new ObjData();
 
-			data.setPositionX(obj.getInt("posX"));
-			data.setPositionY(obj.getInt("posY"));
-			data.setType(obj.getString("type"));
-			dataList.add(data);
+				data.setPositionX(obj.getInt("posX"));
+				data.setPositionY(obj.getInt("posY"));
+				data.setType(obj.getString("type"));
+				dataList.add(data);
+			}
+		} catch (IOException e) {
+			if (!(e instanceof FileNotFoundException)) {
+				throw new RuntimeException("Error reading file", e);
+			}
+			throw (FileNotFoundException) e;
 		}
 
 		return dataList;
@@ -82,18 +92,35 @@ public class Area {
 			throw new IOException("Error al escribir archivo temporal: " + e.getMessage(), e);
 		}
 
-		try {
-			Files.move(tempPath, outputPath,
-					StandardCopyOption.REPLACE_EXISTING,
-					StandardCopyOption.ATOMIC_MOVE);
-		} catch (IOException e) {
+		IOException lastException = null;
+		for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
 			try {
-				Files.deleteIfExists(tempPath);
-			} catch (IOException deleteError) {
-				// Ignorar
+				if (attempt > 0) {
+					System.gc();
+					Thread.sleep(RETRY_DELAY_MS * attempt);
+				}
+
+				Files.move(tempPath, outputPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+				return;
+			} catch (IOException e) {
+				lastException = e;
+				if (attempt < MAX_RETRIES - 1) {
+					System.err.println("Intento " + (attempt + 1) + " fallido para " + link + ", reintentando...");
+				}
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				throw new IOException("Operación interrumpida", e);
 			}
-			throw new IOException("Error al reemplazar archivo: " + e.getMessage(), e);
 		}
+
+		try {
+			Files.deleteIfExists(tempPath);
+		} catch (IOException deleteError) {
+			// Ignorar
+		}
+		throw new IOException(
+				"Error al reemplazar archivo después de " + MAX_RETRIES + " intentos: " + lastException.getMessage(),
+				lastException);
 	}
 
 	public static boolean restoreFromBackup(String link) throws IOException {

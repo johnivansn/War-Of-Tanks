@@ -19,6 +19,9 @@ import input.Constants;
 
 public class JSONParser {
 
+	private static final int MAX_RETRIES = 5;
+	private static final long RETRY_DELAY_MS = 100;
+
 	public static ArrayList<ScoreData> readFile() throws FileNotFoundException {
 		ArrayList<ScoreData> dataList = new ArrayList<ScoreData>();
 		File file = new File(Constants.SCORE_PATH);
@@ -26,17 +29,23 @@ public class JSONParser {
 		if (!file.exists() || file.length() == 0) {
 			return dataList;
 		}
+		try (FileInputStream fis = new FileInputStream(file)) {
+			JSONTokener parser = new JSONTokener(fis);
+			JSONArray jsonList = new JSONArray(parser);
 
-		JSONTokener parser = new JSONTokener(new FileInputStream(file));
-		JSONArray jsonList = new JSONArray(parser);
-
-		for (int i = 0; i < jsonList.length(); i++) {
-			JSONObject obj = (JSONObject) jsonList.get(i);
-			ScoreData data = new ScoreData();
-			data.setScore(obj.getInt("score"));
-			data.setDate(obj.getString("date"));
-			data.setNickname(obj.getString("Nickname"));
-			dataList.add(data);
+			for (int i = 0; i < jsonList.length(); i++) {
+				JSONObject obj = (JSONObject) jsonList.get(i);
+				ScoreData data = new ScoreData();
+				data.setScore(obj.getInt("score"));
+				data.setDate(obj.getString("date"));
+				data.setNickname(obj.getString("Nickname"));
+				dataList.add(data);
+			}
+		} catch (IOException e) {
+			if (!(e instanceof FileNotFoundException)) {
+				throw new RuntimeException("Error reading file", e);
+			}
+			throw (FileNotFoundException) e;
 		}
 
 		return dataList;
@@ -59,7 +68,6 @@ public class JSONParser {
 				Files.copy(outputPath, backupPath, StandardCopyOption.REPLACE_EXISTING);
 			} catch (IOException e) {
 				System.err.println("ADVERTENCIA: No se pudo crear backup: " + e.getMessage());
-				// Continuar de todas formas, pero advertir
 			}
 		}
 
@@ -85,18 +93,34 @@ public class JSONParser {
 			throw new IOException("Error al escribir archivo temporal: " + e.getMessage(), e);
 		}
 
-		try {
-			Files.move(tempPath, outputPath,
-					StandardCopyOption.REPLACE_EXISTING,
-					StandardCopyOption.ATOMIC_MOVE);
-		} catch (IOException e) {
+		IOException lastException = null;
+		for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
 			try {
-				Files.deleteIfExists(tempPath);
-			} catch (IOException deleteError) {
-				// Ignorar error al eliminar temporal
+				if (attempt > 0) {
+					System.gc();
+					Thread.sleep(RETRY_DELAY_MS * attempt);
+				}
+
+				Files.move(tempPath, outputPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+				return;
+			} catch (IOException e) {
+				lastException = e;
+				if (attempt < MAX_RETRIES - 1) {
+					System.err.println("Intento " + (attempt + 1) + " fallido, reintentando...");
+				}
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				throw new IOException("Operación interrumpida", e);
 			}
-			throw new IOException("Error al reemplazar archivo: " + e.getMessage(), e);
 		}
+		try {
+			Files.deleteIfExists(tempPath);
+		} catch (IOException deleteError) {
+			// Ignorar error al eliminar temporal
+		}
+		throw new IOException(
+				"Error al reemplazar archivo después de " + MAX_RETRIES + " intentos: " + lastException.getMessage(),
+				lastException);
 	}
 
 	public static boolean restoreFromBackup() throws IOException {
