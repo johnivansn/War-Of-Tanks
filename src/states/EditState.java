@@ -2,6 +2,8 @@ package states;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -26,11 +28,30 @@ public class EditState extends State {
 	private int posX, posY;
 	private int n = 0, cont;
 	private double heightEdit = Constants.HEIGHT - Constants.HEIGHT / Constants.EDITOR_SCALE;
+	private final boolean loadExisting;
+	private final String mapPath;
 
 	public EditState() {
+		this(false, null);
+	}
+
+	public EditState(String mapPath) {
+		this(true, mapPath);
+	}
+
+	public EditState(boolean loadExisting, String mapPath) {
+		this.loadExisting = loadExisting;
+		this.mapPath = mapPath;
+
 		loopbackEdit();
+
 		buttons = new ArrayList<>();
 		buttonsN = new ArrayList<>();
+
+		if (loadExisting && mapPath != null) {
+			loadMap(mapPath);
+		}
+
 		dump = new Obj(
 				Assets.dump,
 				Color.WHITE,
@@ -41,7 +62,7 @@ public class EditState extends State {
 		buttonsN.add(new Button(
 				Assets.Item1,
 				Assets.Item1,
-				935,230,
+				935, 230,
 				"",
 				new Action() {
 					@Override
@@ -56,7 +77,7 @@ public class EditState extends State {
 		buttonsN.add(new Button(
 				Assets.Item2,
 				Assets.Item2,
-				930,360,
+				930, 360,
 				"",
 				new Action() {
 					@Override
@@ -71,7 +92,7 @@ public class EditState extends State {
 		buttonsN.add(new Button(
 				Assets.piedra,
 				Assets.piedra,
-				950,540,
+				950, 540,
 				"",
 				new Action() {
 					@Override
@@ -86,7 +107,7 @@ public class EditState extends State {
 		buttons.add(new Button(
 				Assets.grey_button,
 				Assets.blue_button,
-				100,50,
+				100, 50,
 				"MENU",
 				new Action() {
 					@Override
@@ -144,17 +165,17 @@ public class EditState extends State {
 
 		dump.update();
 
-		//Basurero
-        dump.vis = true;
-        objs.removeIf(obj -> obj.mouseIn && dump.mouseIn);
+		// Basurero
+		dump.vis = true;
+		objs.removeIf(obj -> obj.mouseIn && dump.mouseIn);
 
-        buttonsN.forEach(Button::update);
-        buttons.forEach(Button::update);
+		buttonsN.forEach(Button::update);
+		buttons.forEach(Button::update);
 
-        objs.forEach(a -> {
-            a.update();
-            a.limit = true;
-        });
+		objs.forEach(a -> {
+			a.update();
+			a.limit = true;
+		});
 
 		for (int i = 0; i < objs.size(); i++) {
 			if (objs.get(i).mouseIn) {
@@ -191,8 +212,8 @@ public class EditState extends State {
 		}
 	}
 
-	public  ArrayList<Obj> getObjs() {
-		return objs ;
+	public ArrayList<Obj> getObjs() {
+		return objs;
 	}
 
 	public void save() {
@@ -220,4 +241,32 @@ public class EditState extends State {
 		}
 	}
 
+	private void loadMap(String link) {
+		Links.links = Links.getLinks();
+		BufferedImage texture = null;
+		try {
+			ArrayList<ObjData> dataList = Area.readFile(link);
+			for (int i = 0; i < dataList.size(); i++) {
+				if (dataList.get(i).getType().equals("Item1")) {
+					texture = Assets.Item1;
+				}
+				if (dataList.get(i).getType().equals("Item2")) {
+					texture = Assets.Item2;
+				}
+				if (dataList.get(i).getType().equals("piedra")) {
+					texture = Assets.piedra;
+				}
+				objs.add(new Obj(
+						texture,
+						Color.CYAN,
+						new Vector2D(
+								dataList.get(i).getPositionX() * Constants.EDITOR_SCALE,
+								dataList.get(i).getPositionY() * Constants.EDITOR_SCALE + (heightEdit - 50)),
+						true,
+						false));
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 }
