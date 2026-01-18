@@ -32,6 +32,8 @@ public class Player extends MovingObject {
 
 	private long fireSpeed;
 
+	private final PowerUpState powerUpState;
+
 	public Player(
 			Vector2D position,
 			Vector2D velocity,
@@ -61,7 +63,7 @@ public class Player extends MovingObject {
 				Assets.shieldEffect,
 				80,
 				null);
-
+		powerUpState = new PowerUpState();
 		visible = true;
 	}
 
@@ -82,39 +84,40 @@ public class Player extends MovingObject {
 			multi += dt;
 		}
 
-		if (shieldOn) {
-			shieldTime += dt;
-			if (shieldTime > Constants.SHIELD_TIME) {
-				shieldTime = 0;
-				shieldOn = false;
-			}
+		powerUpState.update(dt);
+
+		if (!shieldOn && powerUpState.isActive(PowerUpTypes.SHIELD)) {
+			shieldOn = true;
+		}
+		if (shieldOn && !powerUpState.isActive(PowerUpTypes.SHIELD)) {
+			shieldOn = false;
+			shieldTime = 0;
 		}
 
-		if (doubleScoreOn) {
-			doubleScoreTime += dt;
-			if (doubleScoreTime > Constants.DOUBLE_SCORE_TIME) {
-				doubleScoreOn = false;
-				doubleScoreTime = 0;
-			}
+		if (!doubleScoreOn && powerUpState.isActive(PowerUpTypes.SCORE_X2)) {
+			doubleScoreOn = true;
+		}
+		if (doubleScoreOn && !powerUpState.isActive(PowerUpTypes.SCORE_X2)) {
+			doubleScoreOn = false;
+			doubleScoreTime = 0;
 		}
 
-		if (fastFireOn) {
+		if (!fastFireOn && powerUpState.isActive(PowerUpTypes.FASTER_FIRE)) {
+			fastFireOn = true;
 			fireSpeed = Constants.FIRE_RATE / 2;
-			fastFireTime += dt;
-			if (fastFireTime > Constants.FAST_FIRE_TIME) {
-				fastFireOn = false;
-				fastFireTime = 0;
-			}
-		} else {
+		}
+		if (fastFireOn && !powerUpState.isActive(PowerUpTypes.FASTER_FIRE)) {
+			fastFireOn = false;
+			fastFireTime = 0;
 			fireSpeed = Constants.FIRE_RATE;
 		}
 
-		if (doubleGunOn) {
-			doubleGunTime += dt;
-			if (doubleGunTime > Constants.DOUBLE_GUN_TIME) {
-				doubleGunOn = false;
-				doubleGunTime = 0;
-			}
+		if (!doubleGunOn && powerUpState.isActive(PowerUpTypes.DOUBLE_GUN)) {
+			doubleGunOn = true;
+		}
+		if (doubleGunOn && !powerUpState.isActive(PowerUpTypes.DOUBLE_GUN)) {
+			doubleGunOn = false;
+			doubleGunTime = 0;
 		}
 
 		if (multi > Constants.MULTI_FIRE_DURATION) {
@@ -316,28 +319,20 @@ public class Player extends MovingObject {
 	}
 
 	public void setShield() {
-		if (shieldOn)
-			shieldTime = 0;
-		shieldOn = true;
+		powerUpState.activate(PowerUpTypes.SHIELD, Constants.SHIELD_TIME);
 		multiOn = false;
 	}
 
 	public void setDoubleScore() {
-		if (doubleScoreOn)
-			doubleScoreTime = 0;
-		doubleScoreOn = true;
+		powerUpState.activate(PowerUpTypes.SCORE_X2, Constants.DOUBLE_SCORE_TIME);
 	}
 
 	public void setFastFire() {
-		if (fastFireOn)
-			fastFireTime = 0;
-		fastFireOn = true;
+		powerUpState.activate(PowerUpTypes.FASTER_FIRE, Constants.FAST_FIRE_TIME);
 	}
 
 	public void setDoubleGun() {
-		if (doubleGunOn)
-			doubleGunTime = 0;
-		doubleGunOn = true;
+		powerUpState.activate(PowerUpTypes.DOUBLE_GUN, Constants.DOUBLE_GUN_TIME);
 	}
 
 	public void setMulti() {
