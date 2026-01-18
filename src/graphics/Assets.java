@@ -2,6 +2,9 @@ package graphics;
 
 import java.awt.Font;
 import java.awt.image.BufferedImage;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.sound.sampled.Clip;
 
@@ -13,156 +16,166 @@ public class Assets {
 
 	public static BufferedImage player;
 	public static BufferedImage doubleGunPlayer;
-
 	public static BufferedImage fire;
-
-	public static BufferedImage[] shieldEffect = new BufferedImage[3];
-
-	public static BufferedImage[] exp1 = new BufferedImage[71];
-	public static BufferedImage[] exp2 = new BufferedImage[17];
-	public static BufferedImage[] exp3 = new BufferedImage[8];
+	public static BufferedImage[] shieldEffect;
+	public static BufferedImage[] exp1;
+	public static BufferedImage[] exp2;
+	public static BufferedImage[] exp3;
 	public static BufferedImage enemy, enemyA, enemyR;
 	public static BufferedImage canyon, canyonA, canyonR;
-
 	public static BufferedImage missile;
 	public static BufferedImage rocks;
-
-	public static BufferedImage[] num = new BufferedImage[11];
+	public static BufferedImage[] num;
 	public static BufferedImage life;
-
 	public static BufferedImage blue_button;
 	public static BufferedImage grey_button, grey_buttonBig, grey_left, grey_right;
 	public static BufferedImage red_button;
 	public static BufferedImage green_left, green_right;
 	public static BufferedImage yellow_buttonBig;
 	public static BufferedImage dump;
-
 	public static BufferedImage muro;
 	public static BufferedImage verde;
 	public static BufferedImage piedra;
-
 	public static BufferedImage menu, lvlMenu, editMenu;
 	public static BufferedImage area, miniCampo;
 	public static BufferedImage score;
-
 	public static BufferedImage Item1, Item2, Item3;
-
 	public static Font fontBig;
 	public static Font fontMed;
 	public static Font fontMed05;
-
-	public static Clip backgroundMusic, theme, explosion, playerLoose, playerShoot, poderShoot, enemyShoot, powerUp,
-			backEdit;
-
+	public static Clip backgroundMusic, theme, explosion, playerLoose, playerShoot, poderShoot, enemyShoot, powerUp, backEdit;
 	public static BufferedImage orb, doubleScore, doubleGun, fastFire, shield, star;
 
 	public static void init() {
-		player = loadImage("/tanks/tank.png");
-		doubleGunPlayer = loadImage("/tanks/tank2.png");
+		player = img("/tanks/tank.png");
+		doubleGunPlayer = img("/tanks/tank2.png");
+		fire = img("/fire/fire.png");
 
-		fire = loadImage("/fire/fire.png");
+		shieldEffect = anim("/shield/shield");
+		exp1 = anim("/explosions/explosion1/");
+		exp2 = anim("/explosions/explosion2/");
+		exp3 = anim("/explosions/explosion3/");
+		num = anim("/num/");
 
-		for (int i = 0; i < 3; i++)
-			shieldEffect[i] = loadImage("/shield/shield" + (i + 1) + ".png");
+		enemy = img("/enemy/enemy.png");
+		enemyA = img("/enemy/enemyA.png");
+		enemyR = img("/enemy/enemyR.png");
+		canyon = img("/enemy/canyon.png");
+		canyonA = img("/enemy/canyonA.png");
+		canyonR = img("/enemy/canyonR.png");
+		muro = img("/enemy/muro.png");
+		verde = img("/enemy/verde.png");
+		piedra = img("/enemy/piedra.png");
+		missile = img("/fire/missile.png");
+		rocks = img("/enemy/Rocks1.png");
+		life = img("/tanks/life.png");
 
-		for (int i = 0; i < exp1.length; i++)
-			exp1[i] = loadImage("/explosions/explosion1/" + i + ".png");
+		fontBig = fnt("/fonts/futureFont.ttf", 42);
+		fontMed = fnt("/fonts/futureFont.ttf", 20);
+		fontMed05 = fnt("/fonts/futureFont.ttf", 21);
 
-		for (int i = 0; i < exp2.length; i++)
-			exp2[i] = loadImage("/explosions/explosion2/" + i + ".png");
+		backgroundMusic = snd("/sounds/backgroundMusic.wav");
+		theme = snd("/sounds/theme.wav");
+		explosion = snd("/sounds/explosion.wav");
+		playerLoose = snd("/sounds/playerShoot.wav");
+		playerShoot = snd("/sounds/playerShoot.wav");
+		poderShoot = snd("/sounds/poderShoot.wav");
+		enemyShoot = snd("/sounds/enemyShoot.wav");
+		powerUp = snd("/sounds/powerUp.wav");
+		backEdit = snd("/sounds/backEdit.wav");
 
-		for (int i = 0; i < exp3.length; i++)
-			exp3[i] = loadImage("/explosions/explosion3/" + i + ".png");
+		blue_button = img("/ui/blue_button01.png");
+		red_button = img("/ui/red_button01.png");
+		yellow_buttonBig = img("/ui/yellow_buttonBig.png");
+		green_left = img("/ui/green_sliderLeft.png");
+		green_right = img("/ui/green_sliderRight.png");
+		grey_button = img("/ui/grey_button01.png");
+		grey_buttonBig = img("/ui/grey_buttonBig.png");
+		grey_left = img("/ui/grey_sliderLeft.png");
+		grey_right = img("/ui/grey_sliderRight.png");
+		dump = img("/ui/dump.png");
 
-		for (int i = 0; i < num.length; i++)
-			num[i] = loadImage("/num/" + i + ".png");
+		orb = img("/powers/orb.png");
+		doubleScore = img("/powers/doubleScore.png");
+		doubleGun = img("/powers/doubleGun.png");
+		fastFire = img("/powers/fastFire.png");
+		star = img("/powers/star.png");
+		shield = img("/powers/shield.png");
 
-		enemy = loadImage("/enemy/enemy.png");
-		enemyA = loadImage("/enemy/enemyA.png");
-		enemyR = loadImage("/enemy/enemyR.png");
+		menu = img("/theme/mainMenu.jpg");
+		lvlMenu = img("/theme/menulvl.jpg");
+		area = img("/theme/campo.jpg");
+		score = img("/theme/Scoreboard.jpg");
+		editMenu = img("/theme/EditMenu.jpg");
+		miniCampo = img("/theme/minicampo.jpg");
 
-		canyon = loadImage("/enemy/canyon.png");
-		canyonA = loadImage("/enemy/canyonA.png");
-		canyonR = loadImage("/enemy/canyonR.png");
-
-		muro = loadImage("/enemy/muro.png");
-		verde = loadImage("/enemy/verde.png");
-		piedra = loadImage("/enemy/piedra.png");
-
-		missile = loadImage("/fire/missile.png");
-
-		rocks = loadImage("/enemy/Rocks1.png");
-
-		life = loadImage("/tanks/life.png");
-
-		fontBig = loadFont("/fonts/futureFont.ttf", 42);
-
-		fontMed = loadFont("/fonts/futureFont.ttf", 20);
-
-		fontMed05 = loadFont("/fonts/futureFont.ttf", (int)(20*1.05));
-
-		backgroundMusic = loadSound("/sounds/backgroundMusic.wav");
-		theme = loadSound("/sounds/theme.wav");
-		explosion = loadSound("/sounds/explosion.wav");
-		playerLoose = loadSound("/sounds/playerShoot.wav");
-		playerShoot = loadSound("/sounds/playerShoot.wav");
-		poderShoot = loadSound("/sounds/poderShoot.wav");
-		enemyShoot = loadSound("/sounds/enemyShoot.wav");
-		powerUp = loadSound("/sounds/powerUp.wav");
-		backEdit = loadSound("/sounds/backEdit.wav");
-
-		blue_button = loadImage("/ui/blue_button01.png");
-
-		red_button = loadImage("/ui/red_button01.png");
-
-		yellow_buttonBig = loadImage("/ui/yellow_buttonBig.png");
-
-		green_left = loadImage("/ui/green_sliderLeft.png");
-		green_right = loadImage("/ui/green_sliderRight.png");
-
-		grey_button = loadImage("/ui/grey_button01.png");
-		grey_buttonBig = loadImage("/ui/grey_buttonBig.png");
-		grey_left = loadImage("/ui/grey_sliderLeft.png");
-		grey_right = loadImage("/ui/grey_sliderRight.png");
-
-		dump = loadImage("/ui/dump.png");
-
-		orb = loadImage("/powers/orb.png");
-		doubleScore = loadImage("/powers/doubleScore.png");
-		doubleGun = loadImage("/powers/doubleGun.png");
-		fastFire = loadImage("/powers/fastFire.png");
-		star = loadImage("/powers/star.png");
-		shield = loadImage("/powers/shield.png");
-
-		menu = loadImage("/theme/mainMenu.jpg");
-		lvlMenu = loadImage("/theme/menulvl.jpg");
-		area = loadImage("/theme/campo.jpg");
-		score = loadImage("/theme/Scoreboard.jpg");
-		editMenu = loadImage("/theme/EditMenu.jpg");
-		miniCampo = loadImage("/theme/minicampo.jpg");
-
-		Item1 = loadImage("/tanks/Item1.png");
-		Item2 = loadImage("/tanks/Item4.png");
-		Item3 = loadImage("/tanks/Item3.png");
-		// ===================================================
+		Item1 = img("/tanks/Item1.png");
+		Item2 = img("/tanks/Item4.png");
+		Item3 = img("/tanks/Item3.png");
 
 		loaded = true;
-
 	}
 
-	public static BufferedImage loadImage(String path) {
+	private static BufferedImage img(String path) {
 		count++;
 		return Loader.imageLoader(path);
 	}
 
-	public static Font loadFont(String path, int size) {
-		count++;
-		return Loader.loadFont(path, size);
+	private static BufferedImage[] anim(String path) {
+		return anim(path, -1, -1);
 	}
 
-	public static Clip loadSound(String path) {
+	private static BufferedImage[] anim(String path, int count) {
+		return anim(path, 0, count - 1);
+	}
+
+	private static BufferedImage[] anim(String path, int start, int end) {
+		List<BufferedImage> frames = new ArrayList<>();
+
+		if (end == -1) {
+			int i = path.endsWith("/") ? 0 : 1;
+			while (true) {
+				String framePath = path.endsWith("/")
+					? path + i + ".png"
+					: path + i + ".png";
+
+				URL url = Assets.class.getResource("/resources" + framePath);
+				if (url == null) break;
+
+				frames.add(img(framePath));
+				i++;
+			}
+		} else {
+			for (int i = start; i <= end; i++) {
+				String framePath = path.endsWith("/")
+					? path + i + ".png"
+					: path + i + ".png";
+				frames.add(img(framePath));
+			}
+		}
+
+		return frames.toArray(new BufferedImage[0]);
+	}
+
+	private static Clip snd(String path) {
 		count++;
 		return Loader.loadSound(path);
 	}
 
+	private static Font fnt(String path, int size) {
+		count++;
+		return Loader.loadFont(path, size);
+	}
+
+	public static BufferedImage loadImage(String path) {
+		return img(path);
+	}
+
+	public static Font loadFont(String path, int size) {
+		return fnt(path, size);
+	}
+
+	public static Clip loadSound(String path) {
+		return snd(path);
+	}
 }
