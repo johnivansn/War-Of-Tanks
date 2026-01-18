@@ -8,7 +8,6 @@ import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Stack;
 
 import gameObjects.Enemy;
 import gameObjects.Enemy2;
@@ -16,10 +15,8 @@ import gameObjects.Enemy3;
 import gameObjects.Fire;
 import gameObjects.FirePool;
 import gameObjects.Message;
-import gameObjects.Missile;
 import gameObjects.MovingObject;
 import gameObjects.Player;
-import gameObjects.PowerUp;
 import gameObjects.PowerUpTypes;
 import gameObjects.Rocks;
 import graphics.Animation;
@@ -45,6 +42,7 @@ public class GameState extends State {
 
 	private Player player;
 	private FirePool firePool;
+	private SpawnManager spawnManager;
 	private ArrayList<MovingObject> movingObjects = new ArrayList<>();
 	private ArrayList<Animation> explosions = new ArrayList<>();
 	private ArrayList<Message> messages = new ArrayList<>();
@@ -55,7 +53,6 @@ public class GameState extends State {
 	private int score = 0;
 	private int lives = 3;
 
-	private int missile;
 	private int waves = 0;
 
 	private long gameOverTimer;
@@ -63,9 +60,6 @@ public class GameState extends State {
 	private boolean poder = false;
 	private boolean expFinal = false;
 
-	private long enemyCont, enemySpawner, enemySpawner2, enemySpawner3;
-	private long powerUpSpawner;
-	private long spawnTimeMissile;
 	private int n, pau;
 	private Sound explosion;
 	// private Random r = new Random();
@@ -85,11 +79,8 @@ public class GameState extends State {
 		//
 		loopBackgroundMusic();
 		firePool = new FirePool(this);
+		spawnManager = new SpawnManager(this);
 		gameOverTimer = 0;
-		// enemySpawner = enemySpawner2 = enemySpawner3 = enemySpawner4 = 1;
-		enemyCont = 1;
-		powerUpSpawner = 0;
-		spawnTimeMissile = 0;
 		pau = 0;
 		gameOver = false;
 		explosion = new Sound(Assets.poderShoot);
@@ -114,56 +105,6 @@ public class GameState extends State {
 				c,
 				false,
 				Assets.fontMed));
-	}
-
-	private void spawnMissile() {
-
-		int a = getRandom(1, 4);
-		Vector2D headingRandom;
-		double angleMissile;
-
-		if (a == 1) {// izq arriba a der abajo
-			headingRandom = new Vector2D(0, 1).setDirection(Math.random());
-			angleMissile = headingRandom.getAngle() + Math.PI / 2;
-		} else if (a == 2) {// der abajo a izq arriba
-			headingRandom = new Vector2D(0, 1).setDirection(Math.random() + Math.PI);
-			angleMissile = headingRandom.getAngle() + Math.PI / 2;
-		} else if (a == 3) {// der arriba a izq abajo
-			headingRandom = new Vector2D(0, 1).setDirection(Math.random() + Math.PI / 2);
-			angleMissile = headingRandom.getAngle() + Math.PI / 2;
-		} else {// izq abajo a der arriba
-			headingRandom = new Vector2D(0, 1).setDirection(Math.random() - Math.PI / 2);
-			angleMissile = headingRandom.getAngle() + Math.PI / 2;
-		}
-
-		for (int i = 0; i < missile; i++) {
-			double x, y;
-			if (a == 1) {
-				// izq arriba a der abajo
-				x = i % 2 == 0 ? (Math.random() * Constants.WIDTH - 100) : 0;
-				y = i % 2 == 0 ? 0 : (Math.random() * Constants.HEIGHT - 100);
-			} else if (a == 2) {
-				// der abajo a izq arriba
-				x = i % 2 == 0 ? (Math.random() * Constants.WIDTH - 100) : Constants.WIDTH - 10;
-				y = i % 2 == 0 ? Constants.HEIGHT - 10 : (Math.random() * Constants.HEIGHT - 100);
-			} else if (a == 3) {
-				// der arriba a izq abajo
-				x = i % 2 == 0 ? (Math.random() * Constants.WIDTH - 100) : Constants.WIDTH - 10;
-				y = i % 2 == 0 ? 0 : (Math.random() * Constants.HEIGHT - 100);
-			} else {
-				// izq abajo a der arriba
-				x = i % 2 == 0 ? (Math.random() * Constants.WIDTH - 100) : 0;
-				y = i % 2 == 0 ? Constants.HEIGHT - 10 : (Math.random() * Constants.HEIGHT - 100);
-			}
-
-			movingObjects.add(new Missile(
-					new Vector2D(x, y),
-					headingRandom,
-					Constants.MISSILE_VEL * Math.random() + 2,
-					angleMissile,
-					Assets.missile,
-					this));
-		}
 	}
 
 	public void playExplosion1(Vector2D position) {
@@ -197,209 +138,9 @@ public class GameState extends State {
 
 	}
 
-	private void spawnEnemy() {
-		int rand = (int) (Math.random() * 2);
-		int a = getRandom(1, 10);
-
-		for (int i = 0; i < enemySpawner; i++) {
-			double x, y;
-			if (a % 2 == 0) {
-				x = rand == 0 ? (Math.random() * Constants.WIDTH) : Constants.WIDTH;
-				y = rand == 0 ? Constants.HEIGHT : (Math.random() * Constants.HEIGHT);
-			} else {
-				x = rand == 0 ? (Math.random() * Constants.WIDTH) : 0;
-				y = rand == 0 ? 0 : (Math.random() * Constants.HEIGHT);
-			}
-			ArrayList<Vector2D> path = new ArrayList<>(); // almacena puntos de seguimiento
-
-			path.add(new Vector2D(x, y)); // punto de inicio
-
-			double posX, posY;
-			int[] nodo = numRandom4();// int nodo = getRandom(1, 4);
-			for (int j = 0; j < 4; j++) {// genera puntos de seguimientos
-				if (nodo[j] == 1) {
-					// arriba izq
-					posX = getRandom(50, (Constants.WIDTH / 2) - 100);
-					posY = getRandom(50, (Constants.HEIGHT / 2) - 100);
-				} else if (nodo[j] == 2) {
-					// arriba der
-					posX = getRandom((Constants.WIDTH / 2) + 50, Constants.WIDTH - 100);
-					posY = getRandom(50, (Constants.HEIGHT / 2) - 100);
-				} else if (nodo[j] == 3) {
-					// abajo izq
-					posX = getRandom(50, (Constants.WIDTH / 2) - 100);
-					posY = getRandom((Constants.HEIGHT / 2) + 50, Constants.HEIGHT - 100);
-				} else {
-					// abajo der
-					posX = getRandom((Constants.WIDTH / 2) + 50, Constants.WIDTH - 100);
-					posY = getRandom((Constants.HEIGHT / 2) + 50, Constants.HEIGHT - 100);
-				}
-				path.add(new Vector2D(posX, posY));
-			}
-			movingObjects.add(new Enemy(
-					new Vector2D(path.get(0).getX(), path.get(0).getY()),
-					new Vector2D(),
-					Constants.ENEMY_MAX_VEL,
-					Assets.enemy,
-					path, // pega los puntos de seguimientos
-					this));
-		}
-	}
-
-	private void spawnEnemy2() {
-		int rand = getRandom(1, 10);// ((int) (Math.random() * ((10 + 1) - 1) + 1));//de 1 a 10
-		int a = getRandom(1, 4);
-
-		for (int i = 0; i < enemySpawner2; i++) {
-			double x, y, posX, posY;
-			ArrayList<Vector2D> path = new ArrayList<>(); // almacena puntos de seguimiento
-			if (a == 1) {
-				a++;
-				x = rand % 2 == 0 ? getRandom(50, 150) : getRandom(Constants.WIDTH - 150, Constants.WIDTH - 50);
-				y = Constants.HEIGHT;
-				path.add(new Vector2D(x, y)); // punto de inicio
-
-				posY = getRandom(50, 150);
-				path.add(new Vector2D(x, posY));
-
-				posX = Constants.WIDTH - 10 - x;
-				path.add(new Vector2D(posX, posY));
-			} else if (a == 2) {
-				a++;
-				x = Constants.WIDTH;
-				y = rand % 2 == 0 ? getRandom(Constants.HEIGHT - 150, Constants.HEIGHT - 50) : getRandom(50, 150);
-				path.add(new Vector2D(x, y)); // punto de inicio
-
-				posX = getRandom(50, 150);
-				path.add(new Vector2D(posX, y));
-
-				posY = Constants.HEIGHT - 10 - y;
-				path.add(new Vector2D(posX, posY));
-			} else if (a == 3) {
-				a++;
-				x = rand % 2 == 0 ? getRandom(Constants.WIDTH - 150, Constants.WIDTH - 50) : getRandom(50, 150);
-				y = 0;
-				path.add(new Vector2D(x, y)); // punto de inicio
-
-				posY = getRandom(Constants.HEIGHT - 150, Constants.HEIGHT - 50);
-				path.add(new Vector2D(x, posY));
-
-				posX = Constants.WIDTH - 10 - x;
-				path.add(new Vector2D(posX, posY));
-			} else {
-				a = 1;
-				x = 0;
-				y = rand % 2 == 0 ? getRandom(50, 150) : getRandom(Constants.HEIGHT - 150, Constants.HEIGHT - 50);
-				path.add(new Vector2D(x, y)); // punto de inicio
-
-				posX = getRandom(Constants.WIDTH - 150, Constants.WIDTH - 50);
-				path.add(new Vector2D(posX, y));
-
-				posY = Constants.HEIGHT - 10 - y;
-				path.add(new Vector2D(posX, posY));
-			}
-
-			movingObjects.add(new Enemy2(
-					new Vector2D(path.get(0).getX(), path.get(0).getY()),
-					new Vector2D(),
-					Constants.ENEMY_MAX_VEL,
-					Assets.enemyA,
-					path, // pega los puntos de seguimientos
-					this));
-		}
-	}
-
-	private void spawnEnemy3() {
-
-		double x, y;
-		int a = getRandom(1, 10);
-
-		for (int i = 0; i < enemySpawner3; i++) {
-
-			if (a % 2 == 0) {
-				x = i % 2 == 0 ? (Math.random() * Constants.WIDTH) : Constants.WIDTH - 10;
-				y = i % 2 == 0 ? Constants.HEIGHT - 10 : (Math.random() * Constants.HEIGHT);
-			} else {
-				x = i % 2 == 0 ? (Math.random() * Constants.WIDTH) : 0;
-				y = i % 2 == 0 ? 0 : (Math.random() * Constants.HEIGHT);
-			}
-
-			ArrayList<Vector2D> path = new ArrayList<>(); // almacena puntos de seguimiento
-
-			path.add(new Vector2D(x, y)); // punto de inicio
-			path.add(new Vector2D(0, 0));
-
-			movingObjects.add(new Enemy3(
-					new Vector2D(path.get(0).getX(), path.get(0).getY()),
-					new Vector2D(x, y),
-					Constants.ENEMY_MAX_VEL - 2.0,
-					Assets.enemyR,
-					path,
-					this));
-		}
-	}
-
-	private void spawnObj() {
-		Links.links = Links.getLinks();
-		BufferedImage texture = null;
-
-		try {
-			ArrayList<ObjData> dataList = Area.readFile(Links.links.get(Constants.SELECT - 1));
-			for (int i = 0; i < dataList.size(); i++) {
-				if (waves < 2) {
-					if (dataList.get(i).getType().equals("Item1")) {
-						texture = Assets.Item1;
-					}
-					if (dataList.get(i).getType().equals("Item2")) {
-						texture = Assets.Item2;
-					}
-					if (dataList.get(i).getType().equals("piedra")) {
-						texture = Assets.piedra;
-					}
-
-					movingObjects.add(new Rocks(
-							new Vector2D(
-									dataList.get(i).getPositionX(),
-									dataList.get(i).getPositionY()),
-							texture,
-							this));
-				} else {
-					if (dataList.get(i).getType().equals("Item1")) {
-						texture = Assets.Item1;
-					}
-					if (dataList.get(i).getType().equals("Item2")) {
-						texture = Assets.Item2;
-					}
-					if (!dataList.get(i).getType().equals("piedra")) {
-						movingObjects.add(new Rocks(
-								new Vector2D(
-										dataList.get(i).getPositionX(),
-										dataList.get(i).getPositionY()),
-								texture,
-								this));
-					}
-
-				}
-
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	private void spawnPowerUp() {
-
-		final int x = (int) ((Constants.WIDTH - Assets.orb.getWidth()) * Math.random());
-		final int y = (int) ((Constants.HEIGHT - Assets.orb.getHeight()) * Math.random());
-
-		int index = (int) (Math.random() * (PowerUpTypes.values().length));
-
-		PowerUpTypes p = PowerUpTypes.values()[index];
-
+	public Action createPowerUpAction(PowerUpTypes p, Vector2D position) {
 		final String text = p.text;
 		Action action = null;
-		Vector2D position = new Vector2D(x, y);
 
 		switch (p) {
 			case FIRES:
@@ -511,11 +252,55 @@ public class GameState extends State {
 				break;
 		}
 
-		this.movingObjects.add(new PowerUp(
-				position,
-				p.texture,
-				action,
-				this));
+		return action;
+	}
+
+	private void spawnObj() {
+		Links.links = Links.getLinks();
+		BufferedImage texture = null;
+
+		try {
+			ArrayList<ObjData> dataList = Area.readFile(Links.links.get(Constants.SELECT - 1));
+			for (int i = 0; i < dataList.size(); i++) {
+				if (waves < 2) {
+					if (dataList.get(i).getType().equals("Item1")) {
+						texture = Assets.Item1;
+					}
+					if (dataList.get(i).getType().equals("Item2")) {
+						texture = Assets.Item2;
+					}
+					if (dataList.get(i).getType().equals("piedra")) {
+						texture = Assets.piedra;
+					}
+
+					movingObjects.add(new Rocks(
+							new Vector2D(
+									dataList.get(i).getPositionX(),
+									dataList.get(i).getPositionY()),
+							texture,
+							this));
+				} else {
+					if (dataList.get(i).getType().equals("Item1")) {
+						texture = Assets.Item1;
+					}
+					if (dataList.get(i).getType().equals("Item2")) {
+						texture = Assets.Item2;
+					}
+					if (!dataList.get(i).getType().equals("piedra")) {
+						movingObjects.add(new Rocks(
+								new Vector2D(
+										dataList.get(i).getPositionX(),
+										dataList.get(i).getPositionY()),
+								texture,
+								this));
+					}
+
+				}
+
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -553,8 +338,7 @@ public class GameState extends State {
 		if (gameOver)
 			gameOverTimer += dt;
 
-		powerUpSpawner += dt;
-		spawnTimeMissile += dt;
+		spawnManager.update(dt);
 
 		if (KeyBoard.BtEsc) {
 			pau = 0;
@@ -599,11 +383,6 @@ public class GameState extends State {
 				loopTheme();
 			}
 			//
-			if (powerUpSpawner > Constants.POWER_UP_SPAWN_TIME) {
-				spawnPowerUp();
-				powerUpSpawner = 0;
-			}
-
 			if (score > Constants.WAVE_BLAST_UNLOCK_SCORE && expFinal == false) {
 				Message lifeLostMesg1 = new Message(
 						player.getPosition(),
@@ -633,11 +412,6 @@ public class GameState extends State {
 				}
 			}
 
-			if (spawnTimeMissile > 7000) {
-				spawnMissile();
-				spawnTimeMissile = 0;
-			}
-
 			for (int i = 0; i < movingObjects.size(); i++)
 				if (movingObjects.get(i) instanceof Enemy)
 					return;
@@ -657,7 +431,7 @@ public class GameState extends State {
 					true,
 					Assets.fontBig));
 
-			difficulty(n);
+			spawnManager.spawnWave(waves, n);
 		}
 	}
 
@@ -839,59 +613,5 @@ public class GameState extends State {
 
 		this.messages.add(gameOverMsg);
 		gameOver = true;
-	}
-
-	private static int getRandom(int min, int max) { // genera N aleatorio de min a max
-		return ((int) (Math.random() * (max - min + 1) + min));
-	}
-
-	private static int[] numRandom4() { // genera N° 1,2,3,4 en diferente orden
-		int pos, nNums = 4;
-		int[] arrayRandom = new int[nNums];
-		Stack<Integer> conjunto = new Stack<>();
-
-		for (int i = 0; i < arrayRandom.length; i++) {
-			pos = (int) Math.floor(Math.random() * nNums + 1);
-			arrayRandom[i] = pos;
-			while (conjunto.contains(pos)) {
-				pos = (int) Math.floor(Math.random() * nNums + 1);
-				arrayRandom[i] = pos;
-			}
-			conjunto.push(pos);
-		}
-		return arrayRandom;
-	}
-
-	public void difficulty(int n) {
-		if (n == 0) {
-			missile = (missile <= 4) ? missile + 1 : 1;
-			enemyCont += (waves % 20 == 0) ? 1 : 0;
-		}
-		if (n == 1) {
-			missile = (missile <= 7) ? missile + 1 : 4;
-			enemyCont += (waves % 10 == 0) ? 1 : 0;
-		}
-		if (n == 2) {
-			missile = (missile <= 7) ? missile + 1 : 4;
-			enemyCont += (waves % 10 == 0) ? 1 : 0;
-		}
-		SpawnEnemyA();
-	}
-
-	private void SpawnEnemyA() {
-		enemySpawner = enemySpawner2 = enemySpawner3 = 0;
-		for (int i = 0; i < enemyCont; i++) {
-			int x = getRandom(1, 3);
-			if (x == 1) {
-				enemySpawner++;
-			} else if (x == 2) {
-				enemySpawner2++;
-			} else {
-				enemySpawner3++;
-			}
-		}
-		spawnEnemy();
-		spawnEnemy2();
-		spawnEnemy3();
 	}
 }
