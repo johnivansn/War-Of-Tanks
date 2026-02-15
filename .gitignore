@@ -125,3 +125,4 @@ htmlcov/
 *.orig
 
 !libs/*
+DOCS.md
